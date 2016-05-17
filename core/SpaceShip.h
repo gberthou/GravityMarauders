@@ -6,16 +6,6 @@
 
 #include <Entity.h>
 
-/*
-enum TargetDirection
-{
-    TD_UP,
-    TD_DOWN,
-    TD_LEFT,
-    TD_RIGHT
-};
-*/
-
 extern const float MAX_THRUST;
 
 class SpaceShip: public Entity
@@ -23,8 +13,6 @@ class SpaceShip: public Entity
     public:
         SpaceShip(float mass);
         virtual ~SpaceShip();
-
-        //void ChangeDirection(TargetDirection targetDirection);
 
         // Tries to adjust direction so that it matches with the one given as
         // a parameter.
