@@ -12,9 +12,9 @@ ViewMap::~ViewMap()
 
 void ViewMap::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    for(auto it : map.planets)
+    for(Planet planet : map.planets)
     {
-        ViewPlanet vPlanet(it.planet);
+        ViewPlanet vPlanet(planet);
         target.draw(vPlanet, states);
     }
 }

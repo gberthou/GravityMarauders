@@ -22,24 +22,16 @@ int main(void)
     {
         Resources::LoadTextures();
 
-        Client client("127.0.0.1");
+        Map map;
+        Client client("127.0.0.1", map);
 
         std::cout << "Waiting for server..." << std::endl;
         client.Connect();
-        if(!client.WaitForConnectionAck(sf::seconds(3)))
+        if(!client.WaitForConnectionAck(sf::seconds(3))
+        || !client.WaitForMap(sf::seconds(3)))
             throw GameException("No response from server");
 
         sf::RenderWindow window(sf::VideoMode(800, 600), "GravityMarauders");
-
-        // Build map
-        Planet planet0(1, 2000);
-        Planet planet1(1, 1500);
-        Map map;
-        map.AddPlanet(planet0);
-        map.AddPlanet(planet1);
-
-        planet0.MoveTo({2300, -1000});
-        planet1.MoveTo({-1300, 1100});
 
         // Build formation
         SpaceShip spaceship(200);
@@ -98,6 +90,8 @@ int main(void)
             window.draw(vMap);
             window.draw(vFormation);
             window.display();
+
+            client.Receive();
         }
     }
     catch(GameException e)
@@ -117,19 +111,20 @@ int main(void)
     {
         std::cout << "Initialization..." << std::endl;
 
-        Server server;
-
-        std::cout << "Server is fully initialized!" << std::endl;
-
         // Build map
         Planet planet0(1, 2000);
         Planet planet1(1, 1500);
+        
         Map map;
         map.AddPlanet(planet0);
         map.AddPlanet(planet1);
 
         planet0.MoveTo({2300, -1000});
         planet1.MoveTo({-1300, 1100});
+        
+        Server server(map);
+
+        std::cout << "Server is fully initialized!" << std::endl;
 
         // Build formation
         SpaceShip spaceship(200);

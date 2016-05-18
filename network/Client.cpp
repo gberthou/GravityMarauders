@@ -5,9 +5,10 @@
 #include <PacketFactory.h>
 #include <GameException.h>
 
-Client::Client(const sf::IpAddress &sAddress):
+Client::Client(const sf::IpAddress &sAddress, Map &m):
     state(CS_CREATED),
-    serverAddress(sAddress)
+    serverAddress(sAddress),
+    map(m)
 {
     setBlocking(false);
 }
@@ -22,9 +23,7 @@ bool Client::Connect()
     {
         sf::Packet packet;
         PacketFactory::BuildConnectionReqPacket(packet);
-
-        if(send(packet, serverAddress, Server::PORT) != sf::Socket::Done)
-            throw GameException("Client::Connect cannot contact server");
+        sendPacket(packet);
         return true;
     }
     return false;
@@ -32,12 +31,37 @@ bool Client::Connect()
 
 bool Client::WaitForConnectionAck(const sf::Time &timeout)
 {
-    sf::SocketSelector selector;
-    selector.add(*this);
-    if(selector.wait(timeout))
+    if(state == CS_CREATED)
     {
-        Receive();
-        return state == CS_CONNECTED;
+        sf::SocketSelector selector;
+        selector.add(*this);
+        if(selector.wait(timeout))
+        {
+            Receive();
+            if(state == CS_CONNECTED_NO_MAP) // Connection accepted
+            {
+                sf::Packet packet;
+                PacketFactory::BuildMapReqPacket(packet);
+                sendPacket(packet);
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Client::WaitForMap(const sf::Time &timeout)
+{
+    if(state == CS_CONNECTED_NO_MAP)
+    {
+        sf::SocketSelector selector;
+        selector.add(*this);
+        if(selector.wait(timeout))
+        {
+            Receive();
+            if(state == CS_INITIALIZED) // Map received and game initialized
+                return true;
+        }
     }
     return false;
 }
@@ -61,6 +85,13 @@ bool Client::Receive()
     return false;
 }
 
+void Client::sendPacket(sf::Packet &packet)
+{
+    if(send(packet, serverAddress, Server::PORT)
+       != sf::Socket::Done)
+        throw GameException("Cannot contact server");
+}
+
 void Client::onPacketReceived(sf::Packet &packet,
                               const sf::IpAddress &ipAddress,
                               unsigned short port)
@@ -68,17 +99,19 @@ void Client::onPacketReceived(sf::Packet &packet,
     (void) port;
     (void) ipAddress;
 
-
-    //if(ipAddress == serverAddress)
+    PacketType ptype = PacketFactory::GetPacketType(packet);
+    if(ptype == PT_CONNECTION_ACK && state == CS_CREATED)
     {
-        PacketType ptype = PacketFactory::GetPacketType(packet);
-        std::cout << ptype << std::endl;
-        if(ptype == PT_CONNECTION_ACK)
-        {
-            state = CS_CONNECTED;
+        state = CS_CONNECTED_NO_MAP;
 
-            std::cout << "Successfully connected to " << ipAddress << std::endl;
-        }
+        std::cout << "Successfully connected to " << ipAddress << std::endl;
+    }
+    else if(ptype == PT_MAP_ANS && state == CS_CONNECTED_NO_MAP)
+    {
+        state = CS_INITIALIZED;
+        packet >> map;
+
+        std::cout << "Received map from " << ipAddress << std::endl;
     }
 }
 

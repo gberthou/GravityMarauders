@@ -38,3 +38,13 @@ void Planet::ApplyGravityTo(Entity &entity) const
     }
 }
 
+sf::Packet &operator<<(sf::Packet &packet, const Planet &planet)
+{
+    return packet << planet.radius << static_cast<const Entity&>(planet);
+}
+
+sf::Packet &operator>>(sf::Packet &packet, Planet &planet)
+{
+    return packet >> planet.radius >> static_cast<Entity&>(planet);
+}
+

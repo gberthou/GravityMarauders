@@ -10,14 +10,33 @@ Map::~Map()
 
 void Map::AddPlanet(Planet &planet)
 {
-    planets.push_back({planet});
+    planets.push_back(planet);
 }
 
 void Map::ApplyGravityTo(Entity &entity) const
 {
-    for(auto it : planets)
+    for(Planet planet : planets)
     {
-        it.planet.ApplyGravityTo(entity);
+        planet.ApplyGravityTo(entity);
     }
+}
+
+sf::Packet &operator<<(sf::Packet &packet, const Map &map)
+{
+    packet << static_cast<sf::Uint32>(map.planets.size());
+    for(Planet planet : map.planets)
+        packet << planet;
+    return packet;
+}
+
+sf::Packet &operator>>(sf::Packet &packet, Map &map)
+{
+    sf::Uint32 planetCount;
+    packet >> planetCount;
+
+    map.planets.resize(planetCount);
+    for(sf::Uint32 i = 0; i < planetCount; ++i)
+        packet >> map.planets[i];
+    return packet;
 }
 

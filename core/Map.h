@@ -3,12 +3,9 @@
 
 #include <vector>
 
-#include <Planet.h>
+#include <SFML/Network.hpp>
 
-struct PlanetContainer
-{
-    Planet &planet;
-};
+#include <Planet.h>
 
 class Map
 {
@@ -19,8 +16,11 @@ class Map
         void AddPlanet(Planet &planet);
         void ApplyGravityTo(Entity &entity) const;
 
+        friend sf::Packet &operator<<(sf::Packet &packet, const Map &map);
+        friend sf::Packet &operator>>(sf::Packet &packet, Map &map);
+
     protected:
-        std::vector<PlanetContainer> planets;
+        std::vector<Planet> planets;
 
         friend class ViewMap;
 };

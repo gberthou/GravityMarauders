@@ -1,4 +1,5 @@
 #include <Entity.h>
+#include <NetworkUtils.h>
 
 const float Entity::FRAME_DT = 1.f / 120.f;
     
@@ -46,5 +47,21 @@ sf::Vector2f Entity::GetNextVelocity() const
 sf::Vector2f Entity::GetNextPosition() const
 {
     return position + GetNextVelocity() * FRAME_DT;
+}
+
+sf::Packet &operator<<(sf::Packet &packet, const Entity &entity)
+{
+    return packet << entity.mass << static_cast<sf::Uint8>(entity.movable)
+                  << entity.acceleration << entity.velocity << entity.position;
+}
+
+sf::Packet &operator>>(sf::Packet &packet, Entity &entity)
+{
+    sf::Uint8 movable;
+    packet >> entity.mass >> movable
+           >> entity.acceleration >> entity.velocity >> entity.position;
+    entity.movable = (movable != 0);
+
+    return packet;
 }
 

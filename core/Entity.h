@@ -2,6 +2,7 @@
 #define ENTITY_H
 
 #include <SFML/System.hpp>
+#include <SFML/Network.hpp>
 
 class Entity
 {
@@ -16,6 +17,9 @@ class Entity
         sf::Vector2f GetVectorTo(const sf::Vector2f &target) const;
         sf::Vector2f GetNextVelocity() const;
         sf::Vector2f GetNextPosition() const;
+        
+        friend sf::Packet &operator<<(sf::Packet &packet, const Entity &entity);
+        friend sf::Packet &operator>>(sf::Packet &packet, Entity &entity);
 
     protected:
         float mass;

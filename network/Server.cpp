@@ -12,7 +12,8 @@ bool operator<(const ClientDesc & c1, const ClientDesc &c2)
     return c1.ip < c2.ip;
 }
 
-Server::Server()
+Server::Server(const Map &m):
+    map(m)
 {
     if(bind(PORT) != sf::Socket::Done)
     {
@@ -48,6 +49,13 @@ bool Server::Receive()
     return false;
 }
 
+void Server::sendPacket(sf::Packet &packet, const sf::IpAddress &ipAddress,
+                        unsigned short port)
+{
+    if(send(packet, ipAddress, port) != sf::Socket::Done)
+        throw GameException("Cannot send packet to client");
+}
+
 void Server::onPacketReceived(sf::Packet &packet,
                               const sf::IpAddress &ipAddress,
                               unsigned short port)
@@ -65,8 +73,17 @@ void Server::onPacketReceived(sf::Packet &packet,
         // Send connection ack packet
         sf::Packet response;
         PacketFactory::BuildConnectionAckPacket(response);
-        if(send(response, ipAddress, port) != sf::Socket::Done)
-            throw GameException("Cannot send CONNECTION_ACK to client");
+        sendPacket(response, ipAddress, port);
+    }
+    else if(ptype == PT_MAP_REQ)
+    {
+        auto it = clients.find({ipAddress, port});
+        if(it != clients.end())
+        {
+            sf::Packet response;
+            PacketFactory::BuildMapAnsPacket(response, map);
+            sendPacket(response, ipAddress, port);
+        }
     }
 }
 
