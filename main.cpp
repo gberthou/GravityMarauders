@@ -115,12 +115,12 @@ int main(void)
         Planet planet0(1, 2000);
         Planet planet1(1, 1500);
         
+        planet0.MoveTo({2300, -1000});
+        planet1.MoveTo({-1300, 1100});
+        
         Map map;
         map.AddPlanet(planet0);
         map.AddPlanet(planet1);
-
-        planet0.MoveTo({2300, -1000});
-        planet1.MoveTo({-1300, 1100});
         
         Server server(map);
 
