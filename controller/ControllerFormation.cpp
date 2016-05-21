@@ -44,8 +44,8 @@ void ControllerFormation::Update()
         {
             sf::Vector2f targetLocal =
                 formation.leader->localMatrix.transformPoint(
-                        {formation.gridUnit.x * it.gridX,
-                         formation.gridUnit.y * it.gridY}
+                        {formation.gridUnit.x * it.desc.gridX,
+                         formation.gridUnit.y * it.desc.gridY}
                 );
 
             sf::Vector2f targetWorld =

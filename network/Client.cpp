@@ -5,10 +5,11 @@
 #include <PacketFactory.h>
 #include <GameException.h>
 
-Client::Client(const sf::IpAddress &sAddress, Map &m):
+Client::Client(const sf::IpAddress &sAddress, Map &m, Formation &f):
     state(CS_CREATED),
     serverAddress(sAddress),
-    map(m)
+    map(m),
+    formation(f)
 {
     setBlocking(false);
 }
@@ -59,7 +60,23 @@ bool Client::WaitForMap(const sf::Time &timeout)
         if(selector.wait(timeout))
         {
             Receive();
-            if(state == CS_INITIALIZED) // Map received and game initialized
+            if(state == CS_MAPOK_SEND_INFOS) // Map received
+                return true;
+        }
+    }
+    return false;
+}
+
+bool Client::WaitForInfoTransferred(const sf::Time &timeout)
+{
+    if(state == CS_MAPOK_SEND_INFOS)
+    {
+        sf::SocketSelector selector;
+        selector.add(*this);
+        if(selector.wait(timeout))
+        {
+            Receive();
+            if(state == CS_INITIALIZED) // Game initialized
                 return true;
         }
     }
@@ -108,10 +125,22 @@ void Client::onPacketReceived(sf::Packet &packet,
     }
     else if(ptype == PT_MAP_ANS && state == CS_CONNECTED_NO_MAP)
     {
-        state = CS_INITIALIZED;
+        state = CS_MAPOK_SEND_INFOS;
         packet >> map;
 
         std::cout << "Received map from " << ipAddress << std::endl;
+
+        // Send formation to server
+        sf::Packet infoPacket;
+        PacketFactory::BuildFormationPushPacket(infoPacket,
+                                                formation);
+        sendPacket(infoPacket);
+    }
+    else if(ptype == PT_FORMATION_ACK && state == CS_MAPOK_SEND_INFOS)
+    {
+        state = CS_INITIALIZED;
+
+        std::cout << "Game initialized!" << std::endl;
     }
 }
 

@@ -23,8 +23,8 @@ void ViewFormation::draw(sf::RenderTarget &target, sf::RenderStates states)
     for(auto it : formation.slots)
     {
         sf::Vector2f p = formation.leader->localMatrix.transformPoint(
-            {formation.gridUnit.x * it.gridX,
-             formation.gridUnit.y * it.gridY}
+            {formation.gridUnit.x * it.desc.gridX,
+             formation.gridUnit.y * it.desc.gridY}
         );
         sf::CircleShape circle(10);
         circle.setFillColor(sf::Color(255, 255, 255));

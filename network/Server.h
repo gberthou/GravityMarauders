@@ -1,16 +1,22 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include <set>
+#include <map>
 
 #include <SFML/Network.hpp>
 
 #include <Map.h>
+#include <Formation.h>
 
 struct ClientDesc
 {
     sf::IpAddress ip;
     unsigned short port;
+};
+
+struct ClientContent
+{
+    Formation formation;
 };
 
 bool operator<(const ClientDesc & c1, const ClientDesc &c2);
@@ -32,7 +38,7 @@ class Server : protected sf::UdpSocket
                               const sf::IpAddress &ipAddress,
                               unsigned short port);
 
-        std::set<ClientDesc> clients;
+        std::map<ClientDesc, ClientContent> clients;
         
         const Map &map;
 };

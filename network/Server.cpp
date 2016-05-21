@@ -64,7 +64,8 @@ void Server::onPacketReceived(sf::Packet &packet,
     if(ptype == PT_CONNECTION_REQ)
     {
         // Add client to the list of clients
-        if(clients.insert({ipAddress, port}).second) // New client
+        std::pair<ClientDesc, ClientContent> pair({ipAddress, port}, {sf::Vector2f()});
+        if(clients.insert(pair).second) // New client
         {
             std::cout << '[' << ipAddress << ':' << port
                       << "] is now connected!" << std::endl;
@@ -82,6 +83,20 @@ void Server::onPacketReceived(sf::Packet &packet,
         {
             sf::Packet response;
             PacketFactory::BuildMapAnsPacket(response, map);
+            sendPacket(response, ipAddress, port);
+        }
+    }
+    else if(ptype == PT_FORMATION_PUSH)
+    {
+        auto it = clients.find({ipAddress, port});
+        if(it != clients.end())
+        {
+            // Update matching formation
+            packet >> it->second.formation;
+       
+            // Send ack 
+            sf::Packet response;
+            PacketFactory::BuildFormationAckPacket(response);
             sendPacket(response, ipAddress, port);
         }
     }

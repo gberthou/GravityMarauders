@@ -22,13 +22,23 @@ int main(void)
     {
         Resources::LoadTextures();
 
+        // Create empty map (to be received from server)
         Map map;
-        Client client("127.0.0.1", map);
+
+        // Create formation (to be sent to server)
+        Formation formation({96, 96});
+        formation.AddSlotDescriptor(0, 0);
+        formation.AddSlotDescriptor(1, 1);
+        formation.AddSlotDescriptor(-1, -1);
+
+        // Create client
+        Client client("127.0.0.1", map, formation);
 
         std::cout << "Waiting for server..." << std::endl;
         client.Connect();
         if(!client.WaitForConnectionAck(sf::seconds(3))
-        || !client.WaitForMap(sf::seconds(3)))
+        || !client.WaitForMap(sf::seconds(3))
+        || !client.WaitForInfoTransferred(sf::seconds(3)))
             throw GameException("No response from server");
 
         sf::RenderWindow window(sf::VideoMode(800, 600), "GravityMarauders");
@@ -36,11 +46,6 @@ int main(void)
         // Build formation
         SpaceShip spaceship(200);
         SpaceShip spaceshipSlaves[] = {200, 200};
-        Formation formation({96, 96});
-
-        formation.AddSlot(0, 0, spaceship);
-        formation.AddSlot(1, 1, spaceshipSlaves[0]);
-        formation.AddSlot(-1, -1, spaceshipSlaves[1]);
         spaceship.MoveTo({300, 300});
         
         // Populate snapshot
@@ -126,44 +131,22 @@ int main(void)
 
         std::cout << "Server is fully initialized!" << std::endl;
 
-        // Build formation
-        SpaceShip spaceship(200);
-        SpaceShip spaceshipSlaves[] = {200, 200};
-        Formation formation({96, 96});
-
-        formation.AddSlot(0, 0, spaceship);
-        formation.AddSlot(1, 1, spaceshipSlaves[0]);
-        formation.AddSlot(-1, -1, spaceshipSlaves[1]);
-        spaceship.MoveTo({300, 300});
-        
         // Create controllers
         //ControllerSpaceShipUserKeyboard cSpaceship(spaceship);
-        ControllerFormation cFormation(formation);
-        ControllerEntity cEntity(spaceship);
-        ControllerEntity cEntitySlaves[] = {spaceshipSlaves[0], spaceshipSlaves[1]};
 
         SnapshotHistory snapHistory;
 
         for(;;)
         {
             // Compute forces, must be called at the beginning
-            map.ApplyGravityTo(spaceship);
-            map.ApplyGravityTo(spaceshipSlaves[0]);
-            map.ApplyGravityTo(spaceshipSlaves[1]);
             
             // AI computations
-            cFormation.Update();
+            //cFormation.Update();
 
             // Entity controllers must be updated at the end
-            cEntity.Update();
-            cEntitySlaves[0].Update();
-            cEntitySlaves[1].Update();
             
             // Populate snapshot
             Snapshot snapshot;
-            snapshot.AddEntity(spaceship);
-            snapshot.AddEntity(spaceshipSlaves[0]);
-            snapshot.AddEntity(spaceshipSlaves[1]);
 
             snapHistory.AddSnapshot(snapshot);
 
