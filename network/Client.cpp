@@ -1,3 +1,4 @@
+#ifndef SERVER
 #include <iostream>
 
 #include <Client.h>
@@ -5,9 +6,11 @@
 #include <PacketFactory.h>
 #include <GameException.h>
 
-Client::Client(const sf::IpAddress &sAddress, Map &m, Formation &f):
-    state(CS_CREATED),
+Client::Client(const sf::IpAddress &sAddress, EntityManager &emanager, Map &m,
+               Formation &f):
+    state(LS_CREATED),
     serverAddress(sAddress),
+    entityManager(emanager),
     map(m),
     formation(f)
 {
@@ -20,11 +23,8 @@ Client::~Client()
 
 bool Client::Connect()
 {
-    if(state == CS_CREATED)
+    if(state == LS_CREATED)
     {
-        sf::Packet packet;
-        PacketFactory::BuildConnectionReqPacket(packet);
-        sendPacket(packet);
         return true;
     }
     return false;
@@ -32,19 +32,28 @@ bool Client::Connect()
 
 bool Client::WaitForConnectionAck(const sf::Time &timeout)
 {
-    if(state == CS_CREATED)
+    const unsigned int ATTEMPT_COUNT = 10;
+
+    if(state == LS_CREATED)
     {
-        sf::SocketSelector selector;
-        selector.add(*this);
-        if(selector.wait(timeout))
+        for(unsigned int i = 0; i < ATTEMPT_COUNT; ++i)
         {
-            Receive();
-            if(state == CS_CONNECTED_NO_MAP) // Connection accepted
+            sf::Packet packet;
+            PacketFactory::BuildConnectionReqPacket(packet);
+            sendPacket(packet);
+            
+            sf::SocketSelector selector;
+            selector.add(*this);
+            if(selector.wait(timeout / static_cast<float>(ATTEMPT_COUNT)))
             {
-                sf::Packet packet;
-                PacketFactory::BuildMapReqPacket(packet);
-                sendPacket(packet);
-                return true;
+                Receive();
+                if(state == LS_CONNECTED_NO_MAP) // Connection accepted
+                {
+                    sf::Packet mapReq;
+                    PacketFactory::BuildMapReqPacket(mapReq);
+                    sendPacket(mapReq);
+                    return true;
+                }
             }
         }
     }
@@ -53,14 +62,14 @@ bool Client::WaitForConnectionAck(const sf::Time &timeout)
 
 bool Client::WaitForMap(const sf::Time &timeout)
 {
-    if(state == CS_CONNECTED_NO_MAP)
+    if(state == LS_CONNECTED_NO_MAP)
     {
         sf::SocketSelector selector;
         selector.add(*this);
         if(selector.wait(timeout))
         {
             Receive();
-            if(state == CS_MAPOK_SEND_INFOS) // Map received
+            if(state == LS_MAPOK_SEND_INFOS) // Map received
                 return true;
         }
     }
@@ -69,14 +78,14 @@ bool Client::WaitForMap(const sf::Time &timeout)
 
 bool Client::WaitForInfoTransferred(const sf::Time &timeout)
 {
-    if(state == CS_MAPOK_SEND_INFOS)
+    if(state == LS_MAPOK_SEND_INFOS)
     {
         sf::SocketSelector selector;
         selector.add(*this);
         if(selector.wait(timeout))
         {
             Receive();
-            if(state == CS_INITIALIZED) // Game initialized
+            if(state == LS_INITIALIZED) // Game initialized
                 return true;
         }
     }
@@ -85,21 +94,28 @@ bool Client::WaitForInfoTransferred(const sf::Time &timeout)
 
 bool Client::Receive()
 {
-    sf::Packet packet;
-    sf::IpAddress ipAddress;
-    unsigned short port;
-    sf::Socket::Status status = receive(packet, ipAddress, port);
+    sf::Socket::Status status;
+    bool ret = false;
 
-    if(status == sf::Socket::Done) // A packet has been received
+    do
     {
-        onPacketReceived(packet, ipAddress, port);
-        return true;
-    }
-    if(status != sf::Socket::NotReady) // Error
-    {
-        throw GameException("Client::Receive has failed");
-    }
-    return false;
+        sf::Packet packet;
+        sf::IpAddress ipAddress;
+        unsigned short port;
+        
+        status = receive(packet, ipAddress, port);
+
+        if(status == sf::Socket::Done) // A packet has been received
+        {
+            onPacketReceived(packet, ipAddress, port);
+            ret = true;
+        }
+        else if(status != sf::Socket::NotReady) // Error
+        {
+            throw GameException("Client::Receive has failed");
+        }
+    } while(status == sf::Socket::Done);
+    return ret;
 }
 
 void Client::sendPacket(sf::Packet &packet)
@@ -117,15 +133,15 @@ void Client::onPacketReceived(sf::Packet &packet,
     (void) ipAddress;
 
     PacketType ptype = PacketFactory::GetPacketType(packet);
-    if(ptype == PT_CONNECTION_ACK && state == CS_CREATED)
+    if(ptype == PT_CONNECTION_ACK && state == LS_CREATED)
     {
-        state = CS_CONNECTED_NO_MAP;
+        state = LS_CONNECTED_NO_MAP;
 
         std::cout << "Successfully connected to " << ipAddress << std::endl;
     }
-    else if(ptype == PT_MAP_ANS && state == CS_CONNECTED_NO_MAP)
+    else if(ptype == PT_MAP_ANS && state == LS_CONNECTED_NO_MAP)
     {
-        state = CS_MAPOK_SEND_INFOS;
+        state = LS_MAPOK_SEND_INFOS;
         packet >> map;
 
         std::cout << "Received map from " << ipAddress << std::endl;
@@ -136,11 +152,35 @@ void Client::onPacketReceived(sf::Packet &packet,
                                                 formation);
         sendPacket(infoPacket);
     }
-    else if(ptype == PT_FORMATION_ACK && state == CS_MAPOK_SEND_INFOS)
+    else if(ptype == PT_FORMATION_ACK && state == LS_MAPOK_SEND_INFOS)
     {
-        state = CS_INITIALIZED;
-
+        state = LS_INITIALIZED;
         std::cout << "Game initialized!" << std::endl;
+
+        // Send spawn request
+        sf::Packet spawnPacket;
+        PacketFactory::BuildSpawnPushPacket(spawnPacket);
+
+        sendPacket(spawnPacket);
+    }
+    else if(ptype == PT_SPAWN_ACK && state == LS_INITIALIZED)
+    {
+        Snapshot snapshot;
+        packet >> snapshot;
+
+        sf::Uint32 entityCount;
+        std::vector<EntityID> spawnedEntitiesID;
+
+        packet >> entityCount;
+        std::cout << "There are " << entityCount << " entities" << std::endl;
+        spawnedEntitiesID.resize(entityCount);
+        for(sf::Uint32 i = 0; i < entityCount; ++i)
+            packet >> spawnedEntitiesID[i];
+
+        std::vector<Entity*> spawnedEntities;
+        entityManager.FindEntities(spawnedEntities, spawnedEntitiesID);
     }
 }
+
+#endif
 

@@ -45,8 +45,8 @@ inline float max(float a, float b)
     return a < b ? b : a;
 }
 
-SpaceShip::SpaceShip(float mass):
-    Entity(mass, true),
+SpaceShip::SpaceShip(const EntityID &i, float mass):
+    Entity(i, mass, true),
     angle(0.f)
 {
 }

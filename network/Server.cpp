@@ -1,3 +1,4 @@
+#ifdef SERVER
 #include <iostream>
 #include <sstream>
 
@@ -12,7 +13,8 @@ bool operator<(const ClientDesc & c1, const ClientDesc &c2)
     return c1.ip < c2.ip;
 }
 
-Server::Server(const Map &m):
+Server::Server(EntityManager &eManager, const Map &m):
+    entityManager(eManager),
     map(m)
 {
     if(bind(PORT) != sf::Socket::Done)
@@ -49,6 +51,12 @@ bool Server::Receive()
     return false;
 }
 
+void Server::SpawnFormation(const Formation &formation,
+                            std::vector<Entity*> &entities)
+{
+    formation.Spawn(entityManager, entities);
+}
+
 void Server::sendPacket(sf::Packet &packet, const sf::IpAddress &ipAddress,
                         unsigned short port)
 {
@@ -64,7 +72,8 @@ void Server::onPacketReceived(sf::Packet &packet,
     if(ptype == PT_CONNECTION_REQ)
     {
         // Add client to the list of clients
-        std::pair<ClientDesc, ClientContent> pair({ipAddress, port}, {sf::Vector2f()});
+        std::pair<ClientDesc, ClientContent>
+            pair({ipAddress, port},{CS_WAIT_INFO, sf::Vector2f()});
         if(clients.insert(pair).second) // New client
         {
             std::cout << '[' << ipAddress << ':' << port
@@ -89,16 +98,39 @@ void Server::onPacketReceived(sf::Packet &packet,
     else if(ptype == PT_FORMATION_PUSH)
     {
         auto it = clients.find({ipAddress, port});
-        if(it != clients.end())
+        if(it != clients.end() && it->second.state != CS_SPAWNED)
         {
             // Update matching formation
             packet >> it->second.formation;
-       
+
             // Send ack 
             sf::Packet response;
             PacketFactory::BuildFormationAckPacket(response);
             sendPacket(response, ipAddress, port);
         }
     }
+    else if(ptype == PT_SPAWN_PUSH)
+    {
+        auto it = clients.find({ipAddress, port});
+        if(it != clients.end() && it->second.state != CS_SPAWNED)
+        {
+            std::vector<Entity*> spawnedEntities;
+            SpawnFormation(it->second.formation, spawnedEntities);
+
+            it->second.state = CS_SPAWNED;
+
+            // Create snapshot
+            Snapshot snapshot;
+            entityManager.AddToSnapshot(snapshot); 
+
+            // Send ack
+            sf::Packet response;
+            PacketFactory::BuildSpawnAckPacket(response, snapshot,
+                                               spawnedEntities);
+            sendPacket(response, ipAddress, port);
+        }
+    }
 }
+
+#endif
 

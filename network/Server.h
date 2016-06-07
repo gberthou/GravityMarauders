@@ -2,11 +2,19 @@
 #define SERVER_H
 
 #include <map>
+#include <vector>
 
 #include <SFML/Network.hpp>
 
 #include <Map.h>
 #include <Formation.h>
+#include <EntityManager.h>
+
+enum ClientState
+{
+    CS_WAIT_INFO,
+    CS_SPAWNED
+};
 
 struct ClientDesc
 {
@@ -16,6 +24,7 @@ struct ClientDesc
 
 struct ClientContent
 {
+    ClientState state;
     Formation formation;
 };
 
@@ -24,10 +33,13 @@ bool operator<(const ClientDesc & c1, const ClientDesc &c2);
 class Server : protected sf::UdpSocket
 {
     public:
-        Server(const Map &map);
+        Server(EntityManager &entityManager, const Map &map);
         virtual ~Server();
 
         bool Receive();
+
+        void SpawnFormation(const Formation &formation,
+                            std::vector<Entity*> &entities);
 
         static const unsigned short PORT = 41337;
 
@@ -40,6 +52,7 @@ class Server : protected sf::UdpSocket
 
         std::map<ClientDesc, ClientContent> clients;
         
+        EntityManager &entityManager;
         const Map &map;
 };
 

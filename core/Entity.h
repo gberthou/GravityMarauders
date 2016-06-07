@@ -4,15 +4,29 @@
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
+struct EntityID
+{
+    sf::Uint32 h;
+    sf::Uint32 l;
+};
+
+bool operator<(const EntityID &a, const EntityID &b);
+sf::Packet &operator<<(sf::Packet &packet, const EntityID &id);
+sf::Packet &operator>>(sf::Packet &packet, EntityID &id);
+EntityID operator++(EntityID &id);
+
 class Entity
 {
     public:
-        Entity(float mass, bool movable);
+        Entity();
+        Entity(const EntityID &id, float mass, bool movable);
         virtual ~Entity();
 
         void AddAcceleration(const sf::Vector2f &dAcceleration);
         void MoveTo(const sf::Vector2f &position);
         void UpdatePhysics();
+
+        EntityID GetID() const;
 
         sf::Vector2f GetVectorTo(const sf::Vector2f &target) const;
         sf::Vector2f GetNextVelocity() const;
@@ -22,6 +36,7 @@ class Entity
         friend sf::Packet &operator>>(sf::Packet &packet, Entity &entity);
 
     protected:
+        EntityID id; 
         float mass;
         bool movable;
         sf::Vector2f acceleration;

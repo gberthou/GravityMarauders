@@ -12,6 +12,7 @@
 #include <ViewMap.h>
 #include <Snapshot.h>
 #include <SnapshotHistory.h>
+#include <EntityManager.h>
 
 #ifndef SERVER
 #include <Client.h>
@@ -21,6 +22,8 @@ int main(void)
     try
     {
         Resources::LoadTextures();
+
+        EntityManager entityManager;
 
         // Create empty map (to be received from server)
         Map map;
@@ -32,7 +35,7 @@ int main(void)
         formation.AddSlotDescriptor(-1, -1);
 
         // Create client
-        Client client("127.0.0.1", map, formation);
+        Client client("127.0.0.1", entityManager, map, formation);
 
         std::cout << "Waiting for server..." << std::endl;
         client.Connect();
@@ -44,26 +47,31 @@ int main(void)
         sf::RenderWindow window(sf::VideoMode(800, 600), "GravityMarauders");
 
         // Build formation
+        /*
         SpaceShip spaceship(200);
         SpaceShip spaceshipSlaves[] = {200, 200};
         spaceship.MoveTo({300, 300});
-        
+        */
+
         // Populate snapshot
+        /*
         Snapshot snapshot;
         snapshot.AddEntity(spaceship);
         snapshot.AddEntity(spaceshipSlaves[0]);
         snapshot.AddEntity(spaceshipSlaves[1]);
+        */
 
         // Create views
         ViewMap vMap(map);
         ViewFormation vFormation(formation);
 
         // Create controllers
+        /*
         ControllerSpaceShipUserKeyboard cSpaceship(spaceship);
         ControllerFormation cFormation(formation);
         ControllerEntity cEntity(spaceship);
         ControllerEntity cEntitySlaves[] = {spaceshipSlaves[0], spaceshipSlaves[1]};
-
+        */
 
         window.setFramerateLimit(120);
         while(window.isOpen())
@@ -74,24 +82,28 @@ int main(void)
                 if(event.type == sf::Event::Closed)
                     window.close();
                 
-                cSpaceship.Update(event);
+                //cSpaceship.Update(event);
             }
 
             // Compute forces, must be called at the beginning
+            /*
             map.ApplyGravityTo(spaceship);
             map.ApplyGravityTo(spaceshipSlaves[0]);
             map.ApplyGravityTo(spaceshipSlaves[1]);
-            
+            */
+
             // AI computations
-            cFormation.Update();
+            //cFormation.Update();
 
             // Entity controllers must be updated at the end
+            /*
             cEntity.Update();
             cEntitySlaves[0].Update();
             cEntitySlaves[1].Update();
+            */
 
             window.clear();
-            ViewSpaceShip(spaceship).CenterWindowView(window);
+            //ViewSpaceShip(spaceship).CenterWindowView(window);
             window.draw(vMap);
             window.draw(vFormation);
             window.display();
@@ -116,18 +128,20 @@ int main(void)
     {
         std::cout << "Initialization..." << std::endl;
 
+        EntityManager emanager;
+
         // Build map
-        Planet planet0(1, 2000);
-        Planet planet1(1, 1500);
+        Planet *planet0 = emanager.AddPlanet(1, 2000);
+        Planet *planet1 = emanager.AddPlanet(1, 1500);
         
-        planet0.MoveTo({2300, -1000});
-        planet1.MoveTo({-1300, 1100});
+        planet0->MoveTo({2300, -1000});
+        planet1->MoveTo({-1300, 1100});
         
         Map map;
-        map.AddPlanet(planet0);
-        map.AddPlanet(planet1);
+        map.AddPlanet(*planet0);
+        map.AddPlanet(*planet1);
         
-        Server server(map);
+        Server server(emanager, map);
 
         std::cout << "Server is fully initialized!" << std::endl;
 

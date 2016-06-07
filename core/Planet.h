@@ -8,7 +8,7 @@
 class Planet: public Entity
 {
     public:
-        Planet(float density = 1., float radius = 1.);
+        Planet(const EntityID &id = {0, 0}, float density = 1., float radius = 1.);
         virtual ~Planet();
 
         void ApplyGravityTo(Entity &entity) const;

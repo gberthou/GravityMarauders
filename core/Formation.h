@@ -2,11 +2,13 @@
 #define FORMATION_H
 
 #include <vector>
+#include <functional>
 
 #include <SFML/System.hpp>
 #include <SFML/Network.hpp>
 
 #include <SpaceShip.h>
+#include <EntityManager.h>
 
 struct FormationSlotDescriptor
 {
@@ -35,6 +37,13 @@ class Formation
         virtual ~Formation();
 
         void AddSlotDescriptor(int gridX, int gridY);
+        void Spawn(EntityManager &manager, std::vector<Entity*> &entities)
+            const;
+
+        void RefreshSpaceships(
+            const std::vector<std::reference_wrapper<SpaceShip>>
+                &spaceshipVector);
+
         //void AddSlot(int gridX, int gridY, SpaceShip &spaceship);
 
         friend sf::Packet &operator<<(sf::Packet &packet,

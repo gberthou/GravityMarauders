@@ -5,6 +5,7 @@
 
 #include <Map.h>
 #include <Formation.h>
+#include <Snapshot.h>
 
 enum PacketType
 {
@@ -15,7 +16,10 @@ enum PacketType
     PT_MAP_ANS,
 
     PT_FORMATION_PUSH,
-    PT_FORMATION_ACK
+    PT_FORMATION_ACK,
+
+    PT_SPAWN_PUSH,
+    PT_SPAWN_ACK
 };
 
 class PacketFactory
@@ -30,6 +34,10 @@ class PacketFactory
         static void BuildFormationPushPacket(sf::Packet &packet,
                                              const Formation &formation);
         static void BuildFormationAckPacket(sf::Packet &packet);
+        
+        static void BuildSpawnPushPacket(sf::Packet &packet);
+        static void BuildSpawnAckPacket(sf::Packet &packet,
+            const Snapshot &snapshot, const std::vector<Entity*> &entities);
 
         static PacketType GetPacketType(sf::Packet &packet);
 };

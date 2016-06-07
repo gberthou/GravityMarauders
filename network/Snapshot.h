@@ -3,6 +3,8 @@
 
 #include <map>
 
+#include <SFML/Network.hpp>
+
 #include <Entity.h>
 
 class Snapshot
@@ -11,11 +13,14 @@ class Snapshot
         Snapshot();
         virtual ~Snapshot();
 
-        unsigned int AddEntity(const Entity &entity);
-        unsigned int NewEntityId() const;
+        void AddEntity(const Entity &entity);
+
+        friend sf::Packet &operator<<(sf::Packet &packet,
+                                      const Snapshot &snapshot);
+        friend sf::Packet &operator>>(sf::Packet &packet, Snapshot &snapshot);
 
     protected:
-        std::map<unsigned int, Entity> entities;
+        std::map<EntityID, Entity> entities;
 
 };
 

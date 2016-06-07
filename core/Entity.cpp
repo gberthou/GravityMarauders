@@ -2,8 +2,38 @@
 #include <NetworkUtils.h>
 
 const float Entity::FRAME_DT = 1.f / 120.f;
+
+bool operator<(const EntityID &a, const EntityID &b)
+{
+    if(a.h < b.h)
+        return true;
+    return a.l < b.l;
+}
+
+sf::Packet &operator<<(sf::Packet &packet, const EntityID &id)
+{
+    return packet << id.h << id.l;
+}
+
+sf::Packet &operator>>(sf::Packet &packet, EntityID &id)
+{
+    return packet >> id.h >> id.l;
+}
+
+EntityID operator++(EntityID &id)
+{
+    if(id.l + 1 == 0) // low overflow
+        ++id.h;
+    ++id.l;
+    return id;
+}
+
+Entity::Entity()
+{
+}
     
-Entity::Entity(float m, bool mov):
+Entity::Entity(const EntityID &i, float m, bool mov):
+    id(i),
     mass(m),
     movable(mov)
 {
@@ -34,6 +64,11 @@ void Entity::UpdatePhysics()
     }
 }
 
+EntityID Entity::GetID() const
+{
+    return id;
+}
+
 sf::Vector2f Entity::GetVectorTo(const sf::Vector2f &target) const
 {
     return target - position;
@@ -51,14 +86,15 @@ sf::Vector2f Entity::GetNextPosition() const
 
 sf::Packet &operator<<(sf::Packet &packet, const Entity &entity)
 {
-    return packet << entity.mass << static_cast<sf::Uint8>(entity.movable)
+    return packet << entity.id << entity.mass
+                  << static_cast<sf::Uint8>(entity.movable)
                   << entity.acceleration << entity.velocity << entity.position;
 }
 
 sf::Packet &operator>>(sf::Packet &packet, Entity &entity)
 {
     sf::Uint8 movable;
-    packet >> entity.mass >> movable
+    packet >> entity.id >> entity.mass >> movable
            >> entity.acceleration >> entity.velocity >> entity.position;
     entity.movable = (movable != 0);
 

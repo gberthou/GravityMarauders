@@ -6,19 +6,19 @@
 #include <Map.h>
 #include <Formation.h>
 
-enum ClientState
+enum LocalState
 {
-    CS_CREATED,
-    CS_CONNECTED_NO_MAP,
-    CS_MAPOK_SEND_INFOS,
-    CS_INITIALIZED
+    LS_CREATED,
+    LS_CONNECTED_NO_MAP,
+    LS_MAPOK_SEND_INFOS,
+    LS_INITIALIZED
 };
 
 class Client : protected sf::UdpSocket
 {
     public:
-        Client(const sf::IpAddress &serverAddress, Map &map,
-               Formation &formation);
+        Client(const sf::IpAddress &serverAddress, EntityManager &entityManager,
+               Map &map, Formation &formation);
         virtual ~Client();
 
         bool Connect();
@@ -35,9 +35,10 @@ class Client : protected sf::UdpSocket
                               const sf::IpAddress &ipAddress,
                               unsigned short port);
 
-        ClientState state;
+        LocalState state;
         sf::IpAddress serverAddress;
         
+        EntityManager &entityManager;
         Map &map;
         Formation &formation;
 };

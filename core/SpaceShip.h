@@ -11,7 +11,7 @@ extern const float MAX_THRUST;
 class SpaceShip: public Entity
 {
     public:
-        SpaceShip(float mass);
+        SpaceShip(const EntityID &id, float mass);
         virtual ~SpaceShip();
 
         // Tries to adjust direction so that it matches with the one given as

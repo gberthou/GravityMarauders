@@ -31,6 +31,23 @@ void PacketFactory::BuildFormationAckPacket(sf::Packet &packet)
     packet << static_cast<sf::Uint8>(PT_FORMATION_ACK);
 }
 
+void PacketFactory::BuildSpawnPushPacket(sf::Packet &packet)
+{
+    packet << static_cast<sf::Uint8>(PT_SPAWN_PUSH);
+}
+
+void PacketFactory::BuildSpawnAckPacket(sf::Packet &packet,
+    const Snapshot &snapshot, const std::vector<Entity*> &entities)
+{
+    packet << static_cast<sf::Uint8>(PT_SPAWN_ACK)
+           << snapshot
+           << static_cast<sf::Uint32>(entities.size());
+    for(Entity *entity : entities)
+    {
+        packet << entity->GetID();
+    }
+}
+
 PacketType PacketFactory::GetPacketType(sf::Packet &packet)
 {
     sf::Uint8 ptype;
