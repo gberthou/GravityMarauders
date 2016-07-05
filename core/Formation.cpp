@@ -32,16 +32,18 @@ void Formation::Spawn(EntityManager &manager, std::vector<Entity*> &entities)
 }
 
 void Formation::RefreshSpaceships(
-        const std::vector<std::reference_wrapper<SpaceShip>> &spaceshipVector)
+        const std::vector<SpaceShip*> &spaceshipVector)
 {
-    if(slots.size() != spaceshipVector.size())
+    if(slotDescriptors.size() != spaceshipVector.size())
     {
         throw GameException("Formation::RefreshSpaceships received wrong "
                             "parameter");
     }
 
-    for(unsigned int i = 0; i < slots.size(); ++i)
-        slots[i].spaceship = spaceshipVector[i];
+    slots.clear();
+    for(unsigned int i = 0; i < spaceshipVector.size(); ++i)
+        slots.push_back({slotDescriptors[i], *spaceshipVector[i]});
+    evaluateLeader();
 }
 
 sf::Packet &operator<<(sf::Packet &packet, const Formation &formation)
@@ -70,6 +72,25 @@ sf::Packet &operator>>(sf::Packet &packet, Formation &formation)
         packet >> formation.slotDescriptors[i].gridX
                >> formation.slotDescriptors[i].gridY;
     }
+    
     return packet;
+}
+
+void Formation::evaluateLeader(void)
+{
+    const SpaceShip *ptr;
+    unsigned int leaderCount = 0;
+    for(auto it : slots)
+    {
+        if(it.IsLeader())
+        {
+            ptr = &it.spaceship;
+            ++leaderCount;
+        }
+    }
+
+    if(leaderCount != 1)
+        throw GameException("Invalid formation");
+    leader = ptr;
 }
 

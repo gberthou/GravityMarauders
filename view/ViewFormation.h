@@ -14,6 +14,8 @@ class ViewFormation: public sf::Drawable
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states)
             const;
 
+        void CenterView(sf::RenderWindow &window);
+
     protected:
         const Formation &formation;
 };

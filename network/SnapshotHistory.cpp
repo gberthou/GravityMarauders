@@ -1,6 +1,7 @@
 #include <SnapshotHistory.h>
 
-SnapshotHistory::SnapshotHistory()
+SnapshotHistory::SnapshotHistory(EntityManager &emanager):
+    entityManager(emanager)
 {
 }
 
@@ -8,7 +9,7 @@ SnapshotHistory::~SnapshotHistory()
 {
 }
 
-void SnapshotHistory::AddSnapshot(const Snapshot &snapshot)
+void SnapshotHistory::AddSnapshot(const Snapshot *snapshot)
 {
     while(snapshots.size() >= HISTORY_SIZE)
         snapshots.pop();

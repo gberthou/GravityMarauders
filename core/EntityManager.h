@@ -3,11 +3,13 @@
 
 #include <map>
 #include <vector>
+#include <functional>
 
 #include <Entity.h>
 #include <Planet.h>
 #include <SpaceShip.h>
 #include <Snapshot.h>
+#include <Map.h>
 
 class EntityManager
 {
@@ -22,12 +24,17 @@ class EntityManager
                           const std::vector<EntityID> &ids);
 
         void AddToSnapshot(Snapshot &snapshot) const;
+        void RewriteEntities(const Snapshot &snapshot);
+
+        void ApplyGravity(const Map &map);
 
     protected:
         EntityID getNextID();
 
         std::map<EntityID, Entity*> entities;
         EntityID currentID;
+
+        friend class ViewEntityManager;
 };
 
 #endif

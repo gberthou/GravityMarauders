@@ -11,7 +11,9 @@ extern const float MAX_THRUST;
 class SpaceShip: public Entity
 {
     public:
+        SpaceShip();
         SpaceShip(const EntityID &id, float mass);
+        SpaceShip(const SpaceShip &spaceship);
         virtual ~SpaceShip();
 
         // Tries to adjust direction so that it matches with the one given as
@@ -25,7 +27,12 @@ class SpaceShip: public Entity
                        const sf::Vector2f &targetVelocity);
 
         void Thrust(float thrustIntensity = MAX_THRUST * 2./3.);
-
+        
+        virtual sf::Packet &WriteToPacket(sf::Packet &packet) const;
+        virtual sf::Packet &ReadFromPacket(sf::Packet &packet);
+        
+        virtual Entity *Copy() const;
+        
     protected:
         float angle; // Degrees
         sf::Transform localMatrix;

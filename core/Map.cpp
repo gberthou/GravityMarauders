@@ -25,7 +25,7 @@ sf::Packet &operator<<(sf::Packet &packet, const Map &map)
 {
     packet << static_cast<sf::Uint32>(map.planets.size());
     for(Planet planet : map.planets)
-        packet << planet;
+        planet.WriteToPacket(packet);
     return packet;
 }
 
@@ -36,7 +36,7 @@ sf::Packet &operator>>(sf::Packet &packet, Map &map)
 
     map.planets.resize(planetCount);
     for(sf::Uint32 i = 0; i < planetCount; ++i)
-        packet >> map.planets[i];
+        map.planets[i].ReadFromPacket(packet);
     return packet;
 }
 

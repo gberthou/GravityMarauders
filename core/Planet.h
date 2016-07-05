@@ -8,13 +8,17 @@
 class Planet: public Entity
 {
     public:
-        Planet(const EntityID &id = {0, 0}, float density = 1., float radius = 1.);
+        Planet();
+        Planet(const EntityID &id, float density, float radius);
+        Planet(const Planet &planet);
         virtual ~Planet();
 
         void ApplyGravityTo(Entity &entity) const;
-
-        friend sf::Packet &operator<<(sf::Packet &packet, const Planet &planet);
-        friend sf::Packet &operator>>(sf::Packet &packet, Planet &planet);
+        
+        virtual sf::Packet &WriteToPacket(sf::Packet &packet) const;
+        virtual sf::Packet &ReadFromPacket(sf::Packet &packet);
+        
+        virtual Entity *Copy() const;
 
     protected:
         float radius;

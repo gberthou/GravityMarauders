@@ -2,6 +2,7 @@
 #include <cmath>
 
 #include <SpaceShip.h>
+#include <GameException.h>
 
 const float MAX_ANGULAR_VELOCITY = 5.f; // Degrees per frame
 const float EPSILON2             = .01;
@@ -45,9 +46,19 @@ inline float max(float a, float b)
     return a < b ? b : a;
 }
 
+SpaceShip::SpaceShip()
+{
+}
+
 SpaceShip::SpaceShip(const EntityID &i, float mass):
-    Entity(i, mass, true),
+    Entity(i, ET_SPACESHIP, mass, true),
     angle(0.f)
+{
+}
+
+SpaceShip::SpaceShip(const SpaceShip &spaceship):
+    Entity(spaceship),
+    angle(spaceship.angle)
 {
 }
 
@@ -167,5 +178,25 @@ void SpaceShip::Thrust(float thrustIntensity)
         AddAcceleration(direction * min(thrustIntensity, MAX_THRUST));
     else
         AddAcceleration(direction * max(thrustIntensity, -MAX_THRUST));
+}
+
+sf::Packet &SpaceShip::WriteToPacket(sf::Packet &packet) const
+{
+    packet << angle;
+    return Entity::WriteToPacket(packet);
+}
+
+sf::Packet &SpaceShip::ReadFromPacket(sf::Packet &packet)
+{
+    packet >> angle;
+    return Entity::ReadFromPacket(packet);
+}
+
+Entity *SpaceShip::Copy() const
+{
+    Entity *ret = new SpaceShip(*this);
+    if(ret == nullptr)
+        throw GameException("Cannot allocate SpaceShip");
+    return ret;
 }
 

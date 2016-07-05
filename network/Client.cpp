@@ -10,6 +10,7 @@ Client::Client(const sf::IpAddress &sAddress, EntityManager &emanager, Map &m,
                Formation &f):
     state(LS_CREATED),
     serverAddress(sAddress),
+    snapshotHistory(emanager),
     entityManager(emanager),
     map(m),
     formation(f)
@@ -118,6 +119,11 @@ bool Client::Receive()
     return ret;
 }
 
+void Client::UpdateControllers()
+{
+    entityManager.ApplyGravity(map);
+}
+
 void Client::sendPacket(sf::Packet &packet)
 {
     if(send(packet, serverAddress, Server::PORT)
@@ -165,20 +171,38 @@ void Client::onPacketReceived(sf::Packet &packet,
     }
     else if(ptype == PT_SPAWN_ACK && state == LS_INITIALIZED)
     {
-        Snapshot snapshot;
-        packet >> snapshot;
+        Snapshot *snapshot = new Snapshot;
+        packet >> *snapshot;
+
+        snapshotHistory.AddSnapshot(snapshot);
+        entityManager.RewriteEntities(*snapshot);
 
         sf::Uint32 entityCount;
-        std::vector<EntityID> spawnedEntitiesID;
-
         packet >> entityCount;
-        std::cout << "There are " << entityCount << " entities" << std::endl;
+        
+        std::cout << "There are " << entityCount << " spawned entities"
+                  << std::endl;
+        
+        std::vector<EntityID> spawnedEntitiesID;
         spawnedEntitiesID.resize(entityCount);
         for(sf::Uint32 i = 0; i < entityCount; ++i)
             packet >> spawnedEntitiesID[i];
 
         std::vector<Entity*> spawnedEntities;
         entityManager.FindEntities(spawnedEntities, spawnedEntitiesID);
+        
+        std::vector<SpaceShip*> spawnedSpaceships(spawnedEntities.size());
+        for(unsigned int i = 0; i < spawnedEntities.size(); ++i)
+        {
+            if(spawnedEntities[i]->GetType() != ET_SPACESHIP)
+            {
+                throw GameException("Spawned formation with non-spaceship "
+                                    "entities");
+            }
+            spawnedSpaceships[i] = static_cast<SpaceShip*>(spawnedEntities[i]);
+        }
+        
+        formation.RefreshSpaceships(spawnedSpaceships);
     }
 }
 

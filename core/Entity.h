@@ -10,6 +10,12 @@ struct EntityID
     sf::Uint32 l;
 };
 
+enum EntityType
+{
+    ET_PLANET,
+    ET_SPACESHIP
+};
+
 bool operator<(const EntityID &a, const EntityID &b);
 sf::Packet &operator<<(sf::Packet &packet, const EntityID &id);
 sf::Packet &operator>>(sf::Packet &packet, EntityID &id);
@@ -19,7 +25,9 @@ class Entity
 {
     public:
         Entity();
-        Entity(const EntityID &id, float mass, bool movable);
+        Entity(const EntityID &id, EntityType entityType, float mass,
+               bool movable);
+        Entity(const Entity &entity);
         virtual ~Entity();
 
         void AddAcceleration(const sf::Vector2f &dAcceleration);
@@ -27,16 +35,22 @@ class Entity
         void UpdatePhysics();
 
         EntityID GetID() const;
+        EntityType GetType() const;
 
         sf::Vector2f GetVectorTo(const sf::Vector2f &target) const;
         sf::Vector2f GetNextVelocity() const;
         sf::Vector2f GetNextPosition() const;
         
-        friend sf::Packet &operator<<(sf::Packet &packet, const Entity &entity);
-        friend sf::Packet &operator>>(sf::Packet &packet, Entity &entity);
+        virtual sf::Packet &WriteToPacket(sf::Packet &packet) const;
+        virtual sf::Packet &ReadFromPacket(sf::Packet &packet);
+
+        virtual Entity *Copy() const;
+
+        static Entity *CreateEntity(EntityType entityType);
 
     protected:
-        EntityID id; 
+        EntityID id;
+        EntityType entityType; 
         float mass;
         bool movable;
         sf::Vector2f acceleration;

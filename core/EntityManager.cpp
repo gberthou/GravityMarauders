@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <EntityManager.h>
 #include <GameException.h>
 
@@ -8,10 +10,6 @@ EntityManager::EntityManager():
 
 EntityManager::~EntityManager()
 {
-    for(auto it : entities)
-    {
-        delete it.second;
-    }
 }
 
 Planet *EntityManager::AddPlanet(float density, float radius)
@@ -58,12 +56,24 @@ void EntityManager::AddToSnapshot(Snapshot &snapshot) const
         snapshot.AddEntity(*it.second);
 }
 
+void EntityManager::RewriteEntities(const Snapshot &snapshot)
+{
+    entities.clear();
+    for(auto it : snapshot.GetEntities())
+        entities.insert(std::pair<EntityID, Entity*>(it.first, it.second));
+}
+
+void EntityManager::ApplyGravity(const Map &map)
+{
+    for(auto it : entities)
+        map.ApplyGravityTo(*it.second);
+}
+
 EntityID EntityManager::getNextID()
 {
     do
     {
-        ++currentID;
-    } while(entities.find(currentID) != entities.end()); 
+    } while(entities.find(++currentID) != entities.end()); 
     return currentID;
 }
 

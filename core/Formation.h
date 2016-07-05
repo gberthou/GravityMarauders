@@ -40,9 +40,7 @@ class Formation
         void Spawn(EntityManager &manager, std::vector<Entity*> &entities)
             const;
 
-        void RefreshSpaceships(
-            const std::vector<std::reference_wrapper<SpaceShip>>
-                &spaceshipVector);
+        void RefreshSpaceships(const std::vector<SpaceShip*> &spaceshipVector);
 
         //void AddSlot(int gridX, int gridY, SpaceShip &spaceship);
 
@@ -51,6 +49,8 @@ class Formation
         friend sf::Packet &operator>>(sf::Packet &packet, Formation &formation);
 
     protected:
+        void evaluateLeader(void);
+
         sf::Vector2f gridUnit;
         std::vector<FormationSlotDescriptor> slotDescriptors; 
         std::vector<FormationSlot> slots;

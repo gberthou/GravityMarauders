@@ -5,6 +5,7 @@
 
 #include <Map.h>
 #include <Formation.h>
+#include <SnapshotHistory.h>
 
 enum LocalState
 {
@@ -29,6 +30,8 @@ class Client : protected sf::UdpSocket
         
         bool Receive();
 
+        void UpdateControllers();
+
     protected:
         void sendPacket(sf::Packet &packet);
         void onPacketReceived(sf::Packet &packet,
@@ -38,6 +41,8 @@ class Client : protected sf::UdpSocket
         LocalState state;
         sf::IpAddress serverAddress;
         
+        SnapshotHistory snapshotHistory;
+
         EntityManager &entityManager;
         Map &map;
         Formation &formation;

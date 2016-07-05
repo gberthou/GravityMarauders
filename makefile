@@ -8,7 +8,7 @@ SERVER_OBJDIR=obj/server
 LIBDIR= 
 INCDIR=-I"." -I"./core" -I"./view" -I"./controller" -I"./network"
 
-CFLAGS=-std=c++17 -Wall -Wextra -Werror -pedantic -O2 -g
+CFLAGS=-std=c++14 -Wall -Wextra -Werror -pedantic -O2 -g
 
 DEFINES=
 LIBS=-lsfml-graphics -lsfml-window -lsfml-system -lsfml-network

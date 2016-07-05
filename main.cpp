@@ -4,18 +4,19 @@
 
 #include <GameException.h>
 #include <Resources.h>
-#include <ViewFormation.h>
-#include <ViewSpaceShip.h>
 #include <ControllerSpaceShipUserKeyboard.h>
 #include <ControllerFormation.h>
 #include <ControllerEntity.h>
-#include <ViewMap.h>
 #include <Snapshot.h>
 #include <SnapshotHistory.h>
 #include <EntityManager.h>
 
 #ifndef SERVER
 #include <Client.h>
+#include <ViewFormation.h>
+#include <ViewSpaceShip.h>
+#include <ViewMap.h>
+#include <ViewEntityManager.h>
 
 int main(void)
 {
@@ -63,7 +64,6 @@ int main(void)
 
         // Create views
         ViewMap vMap(map);
-        ViewFormation vFormation(formation);
 
         // Create controllers
         /*
@@ -91,6 +91,7 @@ int main(void)
             map.ApplyGravityTo(spaceshipSlaves[0]);
             map.ApplyGravityTo(spaceshipSlaves[1]);
             */
+            client.UpdateControllers();
 
             // AI computations
             //cFormation.Update();
@@ -103,9 +104,10 @@ int main(void)
             */
 
             window.clear();
+            ViewFormation(formation).CenterView(window);
             //ViewSpaceShip(spaceship).CenterWindowView(window);
             window.draw(vMap);
-            window.draw(vFormation);
+            window.draw(ViewEntityManager(entityManager));
             window.display();
 
             client.Receive();
@@ -128,11 +130,11 @@ int main(void)
     {
         std::cout << "Initialization..." << std::endl;
 
-        EntityManager emanager;
+        EntityManager entityManager;
 
         // Build map
-        Planet *planet0 = emanager.AddPlanet(1, 2000);
-        Planet *planet1 = emanager.AddPlanet(1, 1500);
+        Planet *planet0 = entityManager.AddPlanet(1, 2000);
+        Planet *planet1 = entityManager.AddPlanet(1, 1500);
         
         planet0->MoveTo({2300, -1000});
         planet1->MoveTo({-1300, 1100});
@@ -141,14 +143,12 @@ int main(void)
         map.AddPlanet(*planet0);
         map.AddPlanet(*planet1);
         
-        Server server(emanager, map);
+        Server server(entityManager, map);
 
         std::cout << "Server is fully initialized!" << std::endl;
 
         // Create controllers
         //ControllerSpaceShipUserKeyboard cSpaceship(spaceship);
-
-        SnapshotHistory snapHistory;
 
         for(;;)
         {
@@ -159,11 +159,6 @@ int main(void)
 
             // Entity controllers must be updated at the end
             
-            // Populate snapshot
-            Snapshot snapshot;
-
-            snapHistory.AddSnapshot(snapshot);
-
             server.Receive();
 
             // FPS control

@@ -1,5 +1,10 @@
+#include <iostream>
+
 #include <Entity.h>
+#include <Planet.h>
+#include <SpaceShip.h>
 #include <NetworkUtils.h>
+#include <GameException.h>
 
 const float Entity::FRAME_DT = 1.f / 120.f;
 
@@ -32,10 +37,22 @@ Entity::Entity()
 {
 }
     
-Entity::Entity(const EntityID &i, float m, bool mov):
+Entity::Entity(const EntityID &i, EntityType type, float m, bool mov):
     id(i),
+    entityType(type),
     mass(m),
     movable(mov)
+{
+}
+
+Entity::Entity(const Entity &entity):
+    id(entity.id),
+    entityType(entity.entityType),
+    mass(entity.mass),
+    movable(entity.movable),
+    acceleration(entity.acceleration),
+    velocity(entity.velocity),
+    position(entity.position)
 {
 }
 
@@ -69,6 +86,11 @@ EntityID Entity::GetID() const
     return id;
 }
 
+EntityType Entity::GetType() const
+{
+    return entityType;
+}
+
 sf::Vector2f Entity::GetVectorTo(const sf::Vector2f &target) const
 {
     return target - position;
@@ -84,20 +106,55 @@ sf::Vector2f Entity::GetNextPosition() const
     return position + GetNextVelocity() * FRAME_DT;
 }
 
-sf::Packet &operator<<(sf::Packet &packet, const Entity &entity)
+sf::Packet &Entity::WriteToPacket(sf::Packet &packet) const
 {
-    return packet << entity.id << entity.mass
-                  << static_cast<sf::Uint8>(entity.movable)
-                  << entity.acceleration << entity.velocity << entity.position;
+    return packet << id << mass
+                  << static_cast<sf::Uint8>(entityType)
+                  << static_cast<sf::Uint8>(movable)
+                  << acceleration << velocity << position;
 }
 
-sf::Packet &operator>>(sf::Packet &packet, Entity &entity)
+sf::Packet &Entity::ReadFromPacket(sf::Packet &packet)
 {
+    sf::Uint8 type;
     sf::Uint8 movable;
-    packet >> entity.id >> entity.mass >> movable
-           >> entity.acceleration >> entity.velocity >> entity.position;
-    entity.movable = (movable != 0);
+    packet >> id >> mass >> type >> movable
+           >> acceleration >> velocity >> position;
+
+    entityType = static_cast<EntityType>(type);
+    movable = (movable != 0);
 
     return packet;
+}
+
+Entity *Entity::Copy() const
+{
+    Entity *ret = new Entity(*this);
+    if(ret == nullptr)
+        throw GameException("Cannot allocate Entity");
+    return ret;
+}
+
+Entity *Entity::CreateEntity(EntityType entityType)
+{
+    Entity *ret = nullptr;
+    switch(entityType)
+    {
+        case ET_PLANET:
+            ret = new Planet;
+            break;
+
+        case ET_SPACESHIP:
+            ret = new SpaceShip;
+            break;
+
+        default:
+            throw GameException("Trying to create entity with wrong type");
+            break;
+    }
+
+    if(ret == nullptr)
+        throw GameException("Cannot allocate entity");
+    return ret;
 }
 
