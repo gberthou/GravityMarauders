@@ -119,11 +119,6 @@ bool Client::Receive()
     return ret;
 }
 
-void Client::UpdateControllers()
-{
-    entityManager.ApplyGravity(map);
-}
-
 void Client::sendPacket(sf::Packet &packet)
 {
     if(send(packet, serverAddress, Server::PORT)

@@ -7,7 +7,7 @@
 class GameException: public std::exception
 {
     public:
-        GameException(const std::string &message);
+        explicit GameException(const std::string &message);
         virtual ~GameException() throw();
 
         virtual const char *what() const throw();

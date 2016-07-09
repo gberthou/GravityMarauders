@@ -25,8 +25,8 @@ void Formation::Spawn(EntityManager &manager, std::vector<Entity*> &entities)
     for(FormationSlotDescriptor slot : slotDescriptors)
     {
         // TODO: Add several spaceship types
-        (void) slot;
         Entity *entity = manager.AddSpaceShip(200);
+        entity->MoveTo({slot.gridX * gridUnit.x, slot.gridY * gridUnit.y});
         entities.push_back(entity);
     }
 }
@@ -44,6 +44,11 @@ void Formation::RefreshSpaceships(
     for(unsigned int i = 0; i < spaceshipVector.size(); ++i)
         slots.push_back({slotDescriptors[i], *spaceshipVector[i]});
     evaluateLeader();
+}
+
+bool Formation::IsValid() const
+{
+    return slots.size() > 0 && leader != nullptr;
 }
 
 sf::Packet &operator<<(sf::Packet &packet, const Formation &formation)
@@ -78,7 +83,7 @@ sf::Packet &operator>>(sf::Packet &packet, Formation &formation)
 
 void Formation::evaluateLeader(void)
 {
-    const SpaceShip *ptr;
+    SpaceShip *ptr;
     unsigned int leaderCount = 0;
     for(auto it : slots)
     {

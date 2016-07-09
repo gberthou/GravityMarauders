@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <ViewEntityManager.h>
 #include <ViewSpaceShip.h>
 #include <GameException.h>

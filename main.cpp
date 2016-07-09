@@ -6,7 +6,7 @@
 #include <Resources.h>
 #include <ControllerSpaceShipUserKeyboard.h>
 #include <ControllerFormation.h>
-#include <ControllerEntity.h>
+#include <ControllerEntityManager.h>
 #include <Snapshot.h>
 #include <SnapshotHistory.h>
 #include <EntityManager.h>
@@ -47,32 +47,6 @@ int main(void)
 
         sf::RenderWindow window(sf::VideoMode(800, 600), "GravityMarauders");
 
-        // Build formation
-        /*
-        SpaceShip spaceship(200);
-        SpaceShip spaceshipSlaves[] = {200, 200};
-        spaceship.MoveTo({300, 300});
-        */
-
-        // Populate snapshot
-        /*
-        Snapshot snapshot;
-        snapshot.AddEntity(spaceship);
-        snapshot.AddEntity(spaceshipSlaves[0]);
-        snapshot.AddEntity(spaceshipSlaves[1]);
-        */
-
-        // Create views
-        ViewMap vMap(map);
-
-        // Create controllers
-        /*
-        ControllerSpaceShipUserKeyboard cSpaceship(spaceship);
-        ControllerFormation cFormation(formation);
-        ControllerEntity cEntity(spaceship);
-        ControllerEntity cEntitySlaves[] = {spaceshipSlaves[0], spaceshipSlaves[1]};
-        */
-
         window.setFramerateLimit(120);
         while(window.isOpen())
         {
@@ -81,39 +55,30 @@ int main(void)
             {
                 if(event.type == sf::Event::Closed)
                     window.close();
-                
-                //cSpaceship.Update(event);
+               
+                ControllerFormation(formation).Update(event);
             }
 
             // Compute forces, must be called at the beginning
-            /*
-            map.ApplyGravityTo(spaceship);
-            map.ApplyGravityTo(spaceshipSlaves[0]);
-            map.ApplyGravityTo(spaceshipSlaves[1]);
-            */
-            client.UpdateControllers();
+            entityManager.ApplyGravity(map);
 
             // AI computations
-            //cFormation.Update();
+            if(formation.IsValid())
+                ControllerFormation(formation).Update();
 
             // Entity controllers must be updated at the end
-            /*
-            cEntity.Update();
-            cEntitySlaves[0].Update();
-            cEntitySlaves[1].Update();
-            */
+            ControllerEntityManager(entityManager).Update();
 
             window.clear();
             ViewFormation(formation).CenterView(window);
-            //ViewSpaceShip(spaceship).CenterWindowView(window);
-            window.draw(vMap);
+            window.draw(ViewMap(map));
             window.draw(ViewEntityManager(entityManager));
             window.display();
 
             client.Receive();
         }
     }
-    catch(GameException e)
+    catch(const GameException &e)
     {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
@@ -165,7 +130,7 @@ int main(void)
             sf::sleep(sf::milliseconds(100));
         }
     }
-    catch(std::exception e)
+    catch(const GameException &e)
     {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;

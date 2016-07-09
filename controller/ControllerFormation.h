@@ -10,6 +10,7 @@ class ControllerFormation
         virtual ~ControllerFormation();
 
         void Update();
+        void Update(const sf::Event &event);
 
     protected:
         Formation &formation;

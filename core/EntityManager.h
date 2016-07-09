@@ -34,6 +34,7 @@ class EntityManager
         std::map<EntityID, Entity*> entities;
         EntityID currentID;
 
+        friend class ControllerEntityManager;
         friend class ViewEntityManager;
 };
 

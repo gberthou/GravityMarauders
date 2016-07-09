@@ -16,9 +16,7 @@ void Map::AddPlanet(Planet &planet)
 void Map::ApplyGravityTo(Entity &entity) const
 {
     for(Planet planet : planets)
-    {
         planet.ApplyGravityTo(entity);
-    }
 }
 
 sf::Packet &operator<<(sf::Packet &packet, const Map &map)

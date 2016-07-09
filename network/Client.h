@@ -30,8 +30,6 @@ class Client : protected sf::UdpSocket
         
         bool Receive();
 
-        void UpdateControllers();
-
     protected:
         void sendPacket(sf::Packet &packet);
         void onPacketReceived(sf::Packet &packet,

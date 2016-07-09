@@ -1,6 +1,7 @@
 #include <cmath>
 
 #include <ControllerFormation.h>
+#include <ControllerSpaceShipUserKeyboard.h>
 #include <GameException.h>
 
 const float EPSILON2     = 0.01f; // EPSILON = 0.1
@@ -35,8 +36,8 @@ ControllerFormation::~ControllerFormation()
 
 void ControllerFormation::Update()
 {
-    if(!formation.leader)
-        throw GameException("Formation has no leader");
+    if(!formation.IsValid())
+        throw GameException("Invalid formation");
 
     for(auto it : formation.slots)
     {
@@ -54,5 +55,11 @@ void ControllerFormation::Update()
             it.spaceship.GoToPoint(targetWorld, formation.leader->velocity);
         }
     }
+}
+
+void ControllerFormation::Update(const sf::Event &event)
+{
+    if(formation.IsValid())
+        ControllerSpaceShipUserKeyboard(*formation.leader).Update(event);
 }
 

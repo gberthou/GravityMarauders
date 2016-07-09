@@ -42,7 +42,7 @@ class Formation
 
         void RefreshSpaceships(const std::vector<SpaceShip*> &spaceshipVector);
 
-        //void AddSlot(int gridX, int gridY, SpaceShip &spaceship);
+        bool IsValid() const;
 
         friend sf::Packet &operator<<(sf::Packet &packet,
                                       const Formation &formation);
@@ -55,7 +55,7 @@ class Formation
         std::vector<FormationSlotDescriptor> slotDescriptors; 
         std::vector<FormationSlot> slots;
         
-        const SpaceShip *leader;
+        SpaceShip *leader;
 
         friend class ViewFormation;
         friend class ControllerFormation;

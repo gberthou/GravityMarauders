@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <EntityManager.h>
 #include <GameException.h>
 

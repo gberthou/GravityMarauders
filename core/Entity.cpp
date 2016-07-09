@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <Entity.h>
 #include <Planet.h>
 #include <SpaceShip.h>
@@ -117,12 +115,12 @@ sf::Packet &Entity::WriteToPacket(sf::Packet &packet) const
 sf::Packet &Entity::ReadFromPacket(sf::Packet &packet)
 {
     sf::Uint8 type;
-    sf::Uint8 movable;
-    packet >> id >> mass >> type >> movable
+    sf::Uint8 mov;
+    packet >> id >> mass >> type >> mov
            >> acceleration >> velocity >> position;
 
     entityType = static_cast<EntityType>(type);
-    movable = (movable != 0);
+    movable = (mov != 0);
 
     return packet;
 }
