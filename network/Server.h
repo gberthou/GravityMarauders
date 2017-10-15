@@ -33,7 +33,7 @@ bool operator<(const ClientDesc & c1, const ClientDesc &c2);
 class Server : protected sf::UdpSocket
 {
     public:
-        Server(EntityManager &entityManager, const Map &map);
+        Server(EntityManager &em, const Map &m);
         virtual ~Server();
 
         bool Receive();

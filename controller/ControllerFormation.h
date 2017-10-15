@@ -6,7 +6,7 @@
 class ControllerFormation
 {
     public:
-        ControllerFormation(Formation &formation);
+        explicit ControllerFormation(Formation &f);
         virtual ~ControllerFormation();
 
         void Update();

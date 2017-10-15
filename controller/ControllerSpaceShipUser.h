@@ -8,7 +8,7 @@
 class ControllerSpaceShipUser
 {
     public:
-        ControllerSpaceShipUser(SpaceShip &spaceship);
+        explicit ControllerSpaceShipUser(SpaceShip &sp);
         virtual ~ControllerSpaceShipUser();
 
         virtual void Update(const sf::Event &event) = 0;

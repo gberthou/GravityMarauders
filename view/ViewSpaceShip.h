@@ -9,7 +9,7 @@
 class ViewSpaceShip: public sf::Drawable
 {
     public:
-        ViewSpaceShip(const SpaceShip &spaceship);
+        explicit ViewSpaceShip(const SpaceShip &sp);
         virtual ~ViewSpaceShip();
 
         void CenterWindowView(sf::RenderWindow &window) const;

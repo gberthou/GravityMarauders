@@ -12,7 +12,7 @@ class SpaceShip: public Entity
 {
     public:
         SpaceShip();
-        SpaceShip(const EntityID &id, float mass);
+        SpaceShip(const EntityID &i, float mass);
         SpaceShip(const SpaceShip &spaceship);
         virtual ~SpaceShip();
 

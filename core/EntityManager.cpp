@@ -35,16 +35,16 @@ SpaceShip *EntityManager::AddSpaceShip(float mass)
     return spaceship;
 }
 
-void EntityManager::FindEntities(std::vector<Entity*> &out,
+void EntityManager::FindEntities(std::vector<Entity*> &entityCollection,
                                  const std::vector<EntityID> &ids)
 {
-    out.clear();
+    entityCollection.clear();
     for(EntityID id : ids)
     {
         auto it = entities.find(id);
         if(it == entities.end())
             throw GameException("Trying to access a non-existing entity");
-        out.push_back(it->second);
+        entityCollection.push_back(it->second);
     }
 }
 

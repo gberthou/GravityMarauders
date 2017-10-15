@@ -9,7 +9,7 @@
 class ViewEntityManager: public sf::Drawable
 {
     public:
-        ViewEntityManager(const EntityManager &entityManager);
+        explicit ViewEntityManager(const EntityManager &em);
         virtual ~ViewEntityManager();
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states)

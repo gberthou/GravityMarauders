@@ -12,6 +12,7 @@ struct EntityID
 
 enum EntityType
 {
+    ET_NONE,
     ET_PLANET,
     ET_SPACESHIP
 };
@@ -25,13 +26,13 @@ class Entity
 {
     public:
         Entity();
-        Entity(const EntityID &id, EntityType entityType, float mass,
-               bool movable);
+        Entity(const EntityID &i, EntityType type, float m,
+               bool mov);
         Entity(const Entity &entity);
         virtual ~Entity();
 
         void AddAcceleration(const sf::Vector2f &dAcceleration);
-        void MoveTo(const sf::Vector2f &position);
+        void MoveTo(const sf::Vector2f &pos);
         void UpdatePhysics();
 
         EntityID GetID() const;

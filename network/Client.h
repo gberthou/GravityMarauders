@@ -18,8 +18,8 @@ enum LocalState
 class Client : protected sf::UdpSocket
 {
     public:
-        Client(const sf::IpAddress &serverAddress, EntityManager &entityManager,
-               Map &map, Formation &formation);
+        Client(const sf::IpAddress &serverAddress, EntityManager &em,
+               Map &m, Formation &f);
         virtual ~Client();
 
         bool Connect();

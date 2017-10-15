@@ -4,7 +4,7 @@
 #include <GameException.h>
 
 // Uncomment to bypass spaceship physics IA
-#define NO_PHYSICS_IA
+//#define NO_PHYSICS_IA
 
 const float MAX_ANGULAR_VELOCITY = 60.f; // Degrees per frame
 const float EPSILON2             = .01;
@@ -37,7 +37,8 @@ inline float max(float a, float b)
     return a < b ? b : a;
 }
 
-SpaceShip::SpaceShip()
+SpaceShip::SpaceShip():
+    angle(0.f)
 {
 }
 
@@ -49,7 +50,8 @@ SpaceShip::SpaceShip(const EntityID &i, float mass):
 
 SpaceShip::SpaceShip(const SpaceShip &spaceship):
     Entity(spaceship),
-    angle(spaceship.angle)
+    angle(spaceship.angle),
+    localMatrix(spaceship.localMatrix)
 {
 }
 

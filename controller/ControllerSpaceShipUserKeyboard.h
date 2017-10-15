@@ -6,7 +6,7 @@
 class ControllerSpaceShipUserKeyboard: public ControllerSpaceShipUser
 {
     public:
-        ControllerSpaceShipUserKeyboard(SpaceShip &spaceship);
+        explicit ControllerSpaceShipUserKeyboard(SpaceShip &sp);
         virtual ~ControllerSpaceShipUserKeyboard();
 
         virtual void Update(const sf::Event &event);

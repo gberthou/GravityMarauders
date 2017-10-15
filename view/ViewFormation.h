@@ -8,7 +8,7 @@
 class ViewFormation: public sf::Drawable
 {
     public:
-        ViewFormation(const Formation &formation);
+        explicit ViewFormation(const Formation &f);
         virtual ~ViewFormation();
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states)

@@ -10,7 +10,7 @@ ControllerEntityManager::~ControllerEntityManager()
 {
 }
 
-void ControllerEntityManager::Update()
+void ControllerEntityManager::Update() const
 {
     for(auto it : entityManager.entities)
         ControllerEntity(*it.second).Update();

@@ -20,7 +20,7 @@ class EntityManager
         Planet *AddPlanet(float density, float radius);
         SpaceShip *AddSpaceShip(float mass);
 
-        void FindEntities(std::vector<Entity*> &entities,
+        void FindEntities(std::vector<Entity*> &entityCollection,
                           const std::vector<EntityID> &ids);
 
         void AddToSnapshot(Snapshot &snapshot) const;

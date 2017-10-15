@@ -6,10 +6,10 @@
 class ControllerEntityManager
 {
     public:
-        ControllerEntityManager(EntityManager &entityManager);
+        explicit ControllerEntityManager(EntityManager &em);
         virtual ~ControllerEntityManager();
 
-        void Update();
+        void Update() const;
 
     protected:
         EntityManager &entityManager;

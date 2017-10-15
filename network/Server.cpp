@@ -13,8 +13,8 @@ bool operator<(const ClientDesc & c1, const ClientDesc &c2)
     return c1.ip < c2.ip;
 }
 
-Server::Server(EntityManager &eManager, const Map &m):
-    entityManager(eManager),
+Server::Server(EntityManager &em, const Map &m):
+    entityManager(em),
     map(m)
 {
     if(bind(PORT) != sf::Socket::Done)
@@ -73,7 +73,7 @@ void Server::onPacketReceived(sf::Packet &packet,
     {
         // Add client to the list of clients
         std::pair<ClientDesc, ClientContent>
-            pair({ipAddress, port},{CS_WAIT_INFO, sf::Vector2f()});
+            pair(ClientDesc{ipAddress, port}, ClientContent{CS_WAIT_INFO, Formation(sf::Vector2f())});
         if(clients.insert(pair).second) // New client
         {
             std::cout << '[' << ipAddress << ':' << port

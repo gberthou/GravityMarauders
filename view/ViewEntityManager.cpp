@@ -2,8 +2,8 @@
 #include <ViewSpaceShip.h>
 #include <GameException.h>
 
-ViewEntityManager::ViewEntityManager(const EntityManager &emanager):
-    entityManager(emanager)
+ViewEntityManager::ViewEntityManager(const EntityManager &em):
+    entityManager(em)
 {
 }
 

@@ -1,7 +1,7 @@
 #include "GameException.h"
 
-GameException::GameException(const std::string &m):
-    message(m)
+GameException::GameException(const std::string &msg):
+    message(msg)
 {
 }
 

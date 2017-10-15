@@ -9,7 +9,7 @@
 class SnapshotHistory
 {
     public:
-        SnapshotHistory(EntityManager &entityManager);
+        explicit SnapshotHistory(EntityManager &em);
         virtual ~SnapshotHistory();
 
         void AddSnapshot(const Snapshot *snapshot);

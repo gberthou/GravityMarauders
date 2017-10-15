@@ -6,7 +6,7 @@
 class ControllerEntity
 {
     public:
-        ControllerEntity(Entity &entity);
+        explicit ControllerEntity(Entity &e);
         virtual ~ControllerEntity();
 
         void Update();

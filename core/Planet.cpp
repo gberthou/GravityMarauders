@@ -12,13 +12,14 @@ static float len2(const sf::Vector2f &v)
     return v.x * v.x + v.y * v.y;
 }
 
-Planet::Planet()
+Planet::Planet():
+    radius(0.f)
 {
 }
 
-Planet::Planet(const EntityID &i, float density, float r):
-    Entity(i, ET_PLANET, FOUR_THIRD_PI * r * r * r * density, false),
-    radius(r)
+Planet::Planet(const EntityID &i, float density, float rad):
+    Entity(i, ET_PLANET, FOUR_THIRD_PI * rad * rad * rad * density, false),
+    radius(rad)
 {
 }
 

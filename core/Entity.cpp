@@ -31,7 +31,10 @@ EntityID operator++(EntityID &id)
     return id;
 }
 
-Entity::Entity()
+Entity::Entity():
+    entityType(ET_NONE),
+    mass(1),
+    movable(false)
 {
 }
     

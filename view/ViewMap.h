@@ -8,7 +8,7 @@
 class ViewMap: public sf::Drawable
 {
     public:
-        ViewMap(const Map &map);
+        explicit ViewMap(const Map &m);
         virtual ~ViewMap();
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states)

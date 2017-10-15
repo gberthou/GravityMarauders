@@ -6,12 +6,12 @@
 #include <PacketFactory.h>
 #include <GameException.h>
 
-Client::Client(const sf::IpAddress &sAddress, EntityManager &emanager, Map &m,
+Client::Client(const sf::IpAddress &serverAddress, EntityManager &em, Map &m,
                Formation &f):
     state(LS_CREATED),
-    serverAddress(sAddress),
-    snapshotHistory(emanager),
-    entityManager(emanager),
+    serverAddress(serverAddress),
+    snapshotHistory(em),
+    entityManager(em),
     map(m),
     formation(f)
 {

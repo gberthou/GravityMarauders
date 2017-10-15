@@ -9,7 +9,7 @@ class Planet: public Entity
 {
     public:
         Planet();
-        Planet(const EntityID &id, float density, float radius);
+        Planet(const EntityID &i, float density, float rad);
         Planet(const Planet &planet);
         virtual ~Planet();
 

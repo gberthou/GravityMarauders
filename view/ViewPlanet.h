@@ -8,7 +8,7 @@
 class ViewPlanet: public sf::Drawable
 {
     public:
-        ViewPlanet(const Planet &planet);
+        explicit ViewPlanet(const Planet &p);
         virtual ~ViewPlanet();
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states)

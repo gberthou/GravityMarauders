@@ -33,7 +33,7 @@ struct FormationSlot
 class Formation
 {
     public:
-        Formation(const sf::Vector2f &gridUnit);
+        explicit Formation(const sf::Vector2f &gu);
         virtual ~Formation();
 
         void AddSlotDescriptor(int gridX, int gridY);

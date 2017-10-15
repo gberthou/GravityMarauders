@@ -1,7 +1,7 @@
 #include <SnapshotHistory.h>
 
-SnapshotHistory::SnapshotHistory(EntityManager &emanager):
-    entityManager(emanager)
+SnapshotHistory::SnapshotHistory(EntityManager &em):
+    entityManager(em)
 {
 }
 
