@@ -1,17 +1,17 @@
-% Gravity Marauders
+# Gravity Marauders
 
 Simple 2D demo game that involves spaceships and gravity.
 Spaceships are organized in formations, like squadron formations.
-While the user controls the main spaceship of their formation using keyboard, the other spaceship of their formation keep their position within the formation.
+While the user controls the main spaceship of their formation using keyboard, the other spaceships of their formation keep their positions within the formation.
 
-# Controls
+## Controls
 
 Keyboard:
 
  - Left/right/up/down: change orientation
  - Spacebar: thrust
 
-# Quickstart
+## Quickstart
 
 *Gravity Marauders* requires **SFML 2.4.2-3** as a dependence. Earlier versions of SFML might work as well, however this demo was developed using version 2.4.2-3.
 
