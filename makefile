@@ -25,7 +25,9 @@ $(OBJDIR)/%.o : %.cpp
 $(SERVER_OBJDIR)/%.o : %.cpp
 	$(GPP) $(CFLAGS) $(INCDIR) -c $< -o $@ $(DEFINES) -DSERVER
 
-default: $(OBJS)
+default: $(BIN)
+
+$(BIN): $(OBJS)
 	$(GPP) $(OBJS) -o $(BIN) $(LIBDIR) $(LIBS)
 
 $(SERVER_BIN): $(SERVER_OBJS)
@@ -38,3 +40,5 @@ build:
 clean:
 	rm -f $(BIN) $(SERVER_BIN) $(OBJS) $(SERVER_OBJS)
 
+check:
+	cppcheck --inconclusive --enable=all .

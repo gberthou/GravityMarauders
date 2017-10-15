@@ -48,8 +48,10 @@ Entity::Entity(const Entity &entity):
     entityType(entity.entityType),
     mass(entity.mass),
     movable(entity.movable),
+    builtAcceleration(entity.builtAcceleration),
     acceleration(entity.acceleration),
     velocity(entity.velocity),
+    formerVelocity(entity.formerVelocity),
     position(entity.position)
 {
 }
@@ -60,7 +62,7 @@ Entity::~Entity()
 
 void Entity::AddAcceleration(const sf::Vector2f &dAcceleration)
 {
-    acceleration += dAcceleration;
+    builtAcceleration += dAcceleration;
 }
 
 void Entity::MoveTo(const sf::Vector2f &pos)
@@ -72,10 +74,12 @@ void Entity::UpdatePhysics()
 {
     if(movable)
     {
-        velocity += acceleration * FRAME_DT;
         position += velocity * FRAME_DT;
+        velocity += builtAcceleration * FRAME_DT;
 
-        acceleration = {0, 0};
+        builtAcceleration = {0, 0};
+        acceleration = (velocity - formerVelocity) / FRAME_DT;
+        formerVelocity = velocity;
     }
 }
 
@@ -96,7 +100,7 @@ sf::Vector2f Entity::GetVectorTo(const sf::Vector2f &target) const
 
 sf::Vector2f Entity::GetNextVelocity() const
 {
-    return velocity + acceleration * FRAME_DT;
+    return velocity + builtAcceleration * FRAME_DT;
 }
 
 sf::Vector2f Entity::GetNextPosition() const
@@ -109,7 +113,8 @@ sf::Packet &Entity::WriteToPacket(sf::Packet &packet) const
     return packet << id << mass
                   << static_cast<sf::Uint8>(entityType)
                   << static_cast<sf::Uint8>(movable)
-                  << acceleration << velocity << position;
+                  << builtAcceleration << acceleration
+                  << velocity << formerVelocity << position;
 }
 
 sf::Packet &Entity::ReadFromPacket(sf::Packet &packet)
@@ -117,7 +122,8 @@ sf::Packet &Entity::ReadFromPacket(sf::Packet &packet)
     sf::Uint8 type;
     sf::Uint8 mov;
     packet >> id >> mass >> type >> mov
-           >> acceleration >> velocity >> position;
+           >> builtAcceleration >> acceleration
+           >> velocity >> formerVelocity >> position;
 
     entityType = static_cast<EntityType>(type);
     movable = (mov != 0);

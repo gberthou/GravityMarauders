@@ -16,7 +16,6 @@ void ViewFormation::draw(sf::RenderTarget &target, sf::RenderStates states)
     (void) target;
     (void) states;
 
-    /*
     for(auto it : formation.slots)
     {
         ViewSpaceShip vSpaceship(it.spaceship);
@@ -36,7 +35,6 @@ void ViewFormation::draw(sf::RenderTarget &target, sf::RenderStates states)
         circle.setPosition(p + formation.leader->GetNextPosition());
         target.draw(circle, states);
     }
-    */
 }
 
 void ViewFormation::CenterView(sf::RenderWindow &window)

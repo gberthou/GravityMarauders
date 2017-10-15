@@ -73,6 +73,7 @@ int main(void)
             ViewFormation(formation).CenterView(window);
             window.draw(ViewMap(map));
             window.draw(ViewEntityManager(entityManager));
+            window.draw(ViewFormation(formation)); // Debug only
             window.display();
 
             client.Receive();
@@ -118,16 +119,18 @@ int main(void)
         for(;;)
         {
             // Compute forces, must be called at the beginning
+            entityManager.ApplyGravity(map);
             
             // AI computations
             //cFormation.Update();
 
             // Entity controllers must be updated at the end
+            ControllerEntityManager(entityManager).Update();
             
             server.Receive();
 
             // FPS control
-            sf::sleep(sf::milliseconds(100));
+            sf::sleep(sf::milliseconds(10));
         }
     }
     catch(const GameException &e)

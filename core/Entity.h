@@ -53,8 +53,10 @@ class Entity
         EntityType entityType; 
         float mass;
         bool movable;
+        sf::Vector2f builtAcceleration;
         sf::Vector2f acceleration;
         sf::Vector2f velocity;
+        sf::Vector2f formerVelocity;
         sf::Vector2f position;
 
         static const float FRAME_DT;

@@ -3,10 +3,13 @@
 #include <SpaceShip.h>
 #include <GameException.h>
 
-const float MAX_ANGULAR_VELOCITY = 5.f; // Degrees per frame
+// Uncomment to bypass spaceship physics IA
+#define NO_PHYSICS_IA
+
+const float MAX_ANGULAR_VELOCITY = 60.f; // Degrees per frame
 const float EPSILON2             = .01;
 const float ONE_SQRT_2           = 0.707107f;
-const float MAX_THRUST           = 60.f;
+const float MAX_THRUST           = 12e3f;
 
 static float dot(const sf::Vector2f &a, const sf::Vector2f &b)
 {
@@ -23,17 +26,6 @@ static float crossZ(const sf::Vector2f &a, const sf::Vector2f &b)
 {
     return a.x * b.y - a.y * b.x;
 }
-
-/*
-static float sgn(float x)
-{
-    if(x < 0)
-        return -1;
-    if(x > 0)
-        return 1;
-    return 0;
-}
-*/
 
 inline float min(float a, float b)
 {
@@ -65,33 +57,6 @@ SpaceShip::~SpaceShip()
 {
 }
 
-/*
-void SpaceShip::ChangeDirection(TargetDirection targetDirection)
-{
-    const float TARGET_ANGULARS[] = {0.f, 180.f, 270.f, 90.f};
-    
-    float targetAngle = TARGET_ANGULARS[targetDirection];
-    float deltaAngle = targetAngle - angle;
-
-    if(deltaAngle > 180.f)
-    {
-        angle += 360.f;
-        deltaAngle = -360.f + deltaAngle;
-    }
-    else if(deltaAngle < -180.f)
-    {
-        angle -= 360.f;
-        deltaAngle = 360.f + deltaAngle; 
-    }
-
-    float angleToAdd =
-        min(fabs(deltaAngle), MAX_ANGULAR_VELOCITY) * sgn(deltaAngle);
-
-    localMatrix.rotate(angleToAdd);
-    angle += angleToAdd;
-}
-*/
-
 sf::Vector2f SpaceShip::ChangeDirection(const sf::Vector2f &targetDirection)
 {
     // Here, direction = thrust direction, not velocity direction
@@ -116,51 +81,50 @@ sf::Vector2f SpaceShip::ChangeDirection(const sf::Vector2f &targetDirection)
 
     // At this point, angleToAdd belongs to [-180,180] deg
     
+#ifdef NO_PHYSICS_IA
+#else
     // Clip angleToAdd into range [MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY]
     if(angleToAdd >= 0)
         angleToAdd = min(angleToAdd, MAX_ANGULAR_VELOCITY);
     else // angleToAdd < 0
         angleToAdd = max(angleToAdd, -MAX_ANGULAR_VELOCITY);
+#endif
 
     localMatrix.rotate(angleToAdd);
     angle += angleToAdd;
-    
+
     return localMatrix.transformPoint({0, -1});
 }
 
 void SpaceShip::GoToPoint(const sf::Vector2f &destination,
                           const sf::Vector2f &targetVelocity)
 {
-    const float T      = 1;
-    const float SQRT_T = 1;
+    const float FORESEEN_FRAMES = 60;
 
-    // Based on p = 0.5 * (acc0 + accToAdd) * t*t + vel0 * t + p0
-    // Hypothesis: constant acceleration, constant velocity
-    
+    sf::Vector2f anticipatedDest = 
+        destination + targetVelocity * (FORESEEN_FRAMES * Entity::FRAME_DT);
+    sf::Vector2f idealVelocity = (anticipatedDest - position) / (FORESEEN_FRAMES * Entity::FRAME_DT);
+    sf::Vector2f targetAcceleration = (idealVelocity - velocity) / Entity::FRAME_DT;
 
-    const float ANTICIPATION_FACTOR = 120;
-    sf::Vector2f anticipatedDest =
-        destination + targetVelocity * Entity::FRAME_DT * ANTICIPATION_FACTOR;
-        
-    sf::Vector2f accelerationToAdd =
-        ((anticipatedDest - position) / T - velocity / SQRT_T) * 2.f
-        - acceleration;
+    sf::Vector2f idealForce = mass * (targetAcceleration - builtAcceleration - acceleration);
 
-    float accelerationToAddLen2 = len2(accelerationToAdd);
+    float idealForceLen2 = len2(idealForce);
 
-    if(accelerationToAddLen2 > EPSILON2) // Thrust required
+    if(idealForceLen2 > EPSILON2) // Thrust required
     {
-        float thrustIntensity = sqrt(accelerationToAddLen2);
+        float thrustIntensity = sqrt(idealForceLen2);
 
         // Normalize direction
-        sf::Vector2f thrustDirection = accelerationToAdd / thrustIntensity;
+        sf::Vector2f thrustDirection = idealForce / thrustIntensity;
 
         // Rotate spaceship
         sf::Vector2f realDirection =
             ChangeDirection(thrustDirection);
 
-        // Thrust engines only when the angle is less than 45 deg
-        if(dot(realDirection, thrustDirection) > ONE_SQRT_2)
+        // Thrust engines only when the spaceship is almost aligned with ideal
+        // thrust direction
+        float product = dot(realDirection, thrustDirection);
+        if(product > .9f)
         {
             Thrust(thrustIntensity);
         }
@@ -173,10 +137,18 @@ void SpaceShip::Thrust(float thrustIntensity)
     // towards the upper border
     sf::Vector2f direction = localMatrix.transformPoint({0, -1});
     
+#ifdef NO_PHYSICS_IA
+    // Why?
+    thrustIntensity /= 2.f;
+#else
     if(thrustIntensity >= 0)
-        AddAcceleration(direction * min(thrustIntensity, MAX_THRUST));
+        thrustIntensity = min(thrustIntensity, MAX_THRUST);
     else
-        AddAcceleration(direction * max(thrustIntensity, -MAX_THRUST));
+        thrustIntensity = max(thrustIntensity, -MAX_THRUST);
+#endif
+    
+    // Transform force into acceleration
+    AddAcceleration(direction * (thrustIntensity / mass));
 }
 
 sf::Packet &SpaceShip::WriteToPacket(sf::Packet &packet) const
