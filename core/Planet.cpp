@@ -3,14 +3,10 @@
 #include <Planet.h>
 #include <GameException.h>
 
+#include <Utils.hpp>
+
 const float FOUR_THIRD_PI  = 4.188790205;
 const float GRAVITY_FACTOR = 1./1024.;
-const float EPSILON2       = 1; 
-
-static float len2(const sf::Vector2f &v)
-{
-    return v.x * v.x + v.y * v.y;
-}
 
 Planet::Planet():
     radius(0.f)
@@ -38,7 +34,7 @@ void Planet::ApplyGravityTo(Entity &entity) const
     sf::Vector2f direction = entity.GetVectorTo(position);
     float directionLen2 = len2(direction);
 
-    if(directionLen2 > EPSILON2)
+    if(directionLen2 > EPSILON * EPSILON)
     {
         // deltaAcceleration(entity) = Force / entity.mass
         // divide by sqrt(directionLen2) to normalize direction

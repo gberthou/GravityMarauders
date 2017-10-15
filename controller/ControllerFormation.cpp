@@ -4,26 +4,10 @@
 #include <ControllerSpaceShipUserKeyboard.h>
 #include <GameException.h>
 
+#include <Utils.hpp>
+
 const float EPSILON2     = 0.01f; // EPSILON = 0.1
 const float MAX_VELOCITY = 2.f;
-const float ONE_SQRT_2   = 0.707107f;
-
-/*
-static float dot(const sf::Vector2f &a, const sf::Vector2f &b)
-{
-    return a.x * b.x + a.y * b.y;
-}
-
-static float len2(const sf::Vector2f &v)
-{
-    return dot(v, v);
-}
-*/
-
-inline float min(float a, float b)
-{
-    return a < b ? a : b;
-}
 
 ControllerFormation::ControllerFormation(Formation &f):
     formation(f)

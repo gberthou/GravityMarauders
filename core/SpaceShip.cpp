@@ -3,39 +3,13 @@
 #include <SpaceShip.h>
 #include <GameException.h>
 
+#include <Utils.hpp>
+
 // Uncomment to bypass spaceship physics IA
 //#define NO_PHYSICS_IA
 
 const float MAX_ANGULAR_VELOCITY = 60.f; // Degrees per frame
-const float EPSILON2             = .01;
-const float ONE_SQRT_2           = 0.707107f;
 const float MAX_THRUST           = 12e3f;
-
-static float dot(const sf::Vector2f &a, const sf::Vector2f &b)
-{
-    return a.x * b.x + a.y * b.y;
-}
-
-static float len2(const sf::Vector2f &v)
-{
-    return dot(v, v);
-}
-
-// Computes cross product of a and b and returns z corrdinate
-static float crossZ(const sf::Vector2f &a, const sf::Vector2f &b)
-{
-    return a.x * b.y - a.y * b.x;
-}
-
-inline float min(float a, float b)
-{
-    return a < b ? a : b;
-}
-
-inline float max(float a, float b)
-{
-    return a < b ? b : a;
-}
 
 SpaceShip::SpaceShip():
     angle(0.f)
@@ -112,7 +86,7 @@ void SpaceShip::GoToPoint(const sf::Vector2f &destination,
 
     float idealForceLen2 = len2(idealForce);
 
-    if(idealForceLen2 > EPSILON2) // Thrust required
+    if(idealForceLen2 > EPSILON * EPSILON) // Thrust required
     {
         float thrustIntensity = sqrt(idealForceLen2);
 
