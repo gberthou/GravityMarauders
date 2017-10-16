@@ -8,7 +8,7 @@ While the user controls the main spaceship of their formation using keyboard, th
 
 Keyboard:
 
- - Left/right/up/down: change orientation
+ - Left/right arrows: change orientation
  - Spacebar: thrust
 
 ## Quickstart

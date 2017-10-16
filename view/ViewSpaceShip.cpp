@@ -15,6 +15,7 @@ void ViewSpaceShip::CenterWindowView(sf::RenderWindow &window) const
     sf::Vector2u windowSize = window.getSize();
     sf::View view(sf::FloatRect(0, 0, windowSize.x, windowSize.y));
     view.setCenter(spaceship.position);
+    view.setRotation(spaceship.angle);
     window.setView(view);
 }
 

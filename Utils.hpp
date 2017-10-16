@@ -27,3 +27,14 @@ inline float max(float a, float b)
 {
     return a < b ? b : a;
 }
+
+// clamp x to range [a, b]
+// Assumes that a < b
+inline float clamp(float x, float a, float b)
+{
+    if(x < a)
+        return a;
+    if(x > b)
+        return b;
+    return x;
+}

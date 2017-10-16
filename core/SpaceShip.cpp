@@ -8,7 +8,7 @@
 // Uncomment to bypass spaceship physics IA
 //#define NO_PHYSICS_IA
 
-const float MAX_ANGULAR_VELOCITY = 60.f; // Degrees per frame
+const float MAX_ANGULAR_VELOCITY = 5.f; // Degrees per frame
 const float MAX_THRUST           = 12e3f;
 
 SpaceShip::SpaceShip():
@@ -31,6 +31,13 @@ SpaceShip::SpaceShip(const SpaceShip &spaceship):
 
 SpaceShip::~SpaceShip()
 {
+}
+
+void SpaceShip::Rotate(float angleDegrees)
+{
+    angleDegrees = clamp(angleDegrees, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
+    localMatrix.rotate(angleDegrees);
+    angle += angleDegrees;
 }
 
 sf::Vector2f SpaceShip::ChangeDirection(const sf::Vector2f &targetDirection)
@@ -59,11 +66,8 @@ sf::Vector2f SpaceShip::ChangeDirection(const sf::Vector2f &targetDirection)
     
 #ifdef NO_PHYSICS_IA
 #else
-    // Clip angleToAdd into range [MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY]
-    if(angleToAdd >= 0)
-        angleToAdd = min(angleToAdd, MAX_ANGULAR_VELOCITY);
-    else // angleToAdd < 0
-        angleToAdd = max(angleToAdd, -MAX_ANGULAR_VELOCITY);
+    // Clamp angleToAdd into range [MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY]
+    angleToAdd = clamp(angleToAdd, -MAX_ANGULAR_VELOCITY, MAX_ANGULAR_VELOCITY);
 #endif
 
     localMatrix.rotate(angleToAdd);
@@ -77,12 +81,15 @@ void SpaceShip::GoToPoint(const sf::Vector2f &destination,
 {
     const float FORESEEN_FRAMES = 60;
 
-    sf::Vector2f anticipatedDest = 
+    sf::Vector2f anticipatedDest    = 
         destination + targetVelocity * (FORESEEN_FRAMES * Entity::FRAME_DT);
-    sf::Vector2f idealVelocity = (anticipatedDest - position) / (FORESEEN_FRAMES * Entity::FRAME_DT);
-    sf::Vector2f targetAcceleration = (idealVelocity - velocity) / Entity::FRAME_DT;
+    sf::Vector2f idealVelocity      =
+        (anticipatedDest - position) / (FORESEEN_FRAMES * Entity::FRAME_DT);
+    sf::Vector2f targetAcceleration =
+        (idealVelocity - velocity) / Entity::FRAME_DT;
 
-    sf::Vector2f idealForce = mass * (targetAcceleration - builtAcceleration - acceleration);
+    sf::Vector2f idealForce         =
+        mass * (targetAcceleration - builtAcceleration - acceleration);
 
     float idealForceLen2 = len2(idealForce);
 
@@ -117,10 +124,7 @@ void SpaceShip::Thrust(float thrustIntensity)
     // Why?
     thrustIntensity /= 2.f;
 #else
-    if(thrustIntensity >= 0)
-        thrustIntensity = min(thrustIntensity, MAX_THRUST);
-    else
-        thrustIntensity = max(thrustIntensity, -MAX_THRUST);
+    thrustIntensity = clamp(thrustIntensity, -MAX_THRUST, MAX_THRUST);
 #endif
     
     // Transform force into acceleration

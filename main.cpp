@@ -102,7 +102,7 @@ int main(void)
         Planet *planet0 = entityManager.AddPlanet(1, 2000);
         Planet *planet1 = entityManager.AddPlanet(1, 1500);
         
-        planet0->MoveTo({2300, -1000});
+        planet0->MoveTo({6000, -1000});
         planet1->MoveTo({-1300, 1100});
         
         Map map;

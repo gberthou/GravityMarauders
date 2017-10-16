@@ -16,6 +16,8 @@ class SpaceShip: public Entity
         SpaceShip(const SpaceShip &spaceship);
         virtual ~SpaceShip();
 
+        void Rotate(float angleDegrees);
+
         // Tries to adjust direction so that it matches with the one given as
         // a parameter.
         // Returns the actual direction after rotation.
