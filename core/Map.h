@@ -14,6 +14,7 @@ class Map
         virtual ~Map();
 
         void AddPlanet(Planet &planet);
+        sf::Vector2f AccelerationAppliedAt(const sf::Vector2f &position) const;
         void ApplyGravityTo(Entity &entity) const;
 
         friend sf::Packet &operator<<(sf::Packet &packet, const Map &map);

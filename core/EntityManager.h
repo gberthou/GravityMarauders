@@ -36,6 +36,7 @@ class EntityManager
 
         friend class ControllerEntityManager;
         friend class ViewEntityManager;
+        friend class ViewTracks;
 };
 
 #endif

@@ -17,6 +17,7 @@
 #include <ViewSpaceShip.h>
 #include <ViewMap.h>
 #include <ViewEntityManager.h>
+#include <ViewTracks.h>
 
 int main(void)
 {
@@ -74,6 +75,7 @@ int main(void)
             window.draw(ViewMap(map));
             window.draw(ViewEntityManager(entityManager));
             window.draw(ViewFormation(formation)); // Debug only
+            window.draw(ViewTracks(entityManager, map));
             window.display();
 
             client.Receive();

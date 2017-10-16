@@ -17,6 +17,8 @@ void ControllerSpaceShipUserKeyboard::Update(const sf::Event &event)
             spaceship.Rotate(45);
         else if(event.key.code == sf::Keyboard::Left)
             spaceship.Rotate(-45);
+        else if(event.key.code == sf::Keyboard::Space)
+            spaceship.Thrust();
     }
 }
 

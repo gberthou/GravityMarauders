@@ -13,6 +13,7 @@ class Planet: public Entity
         Planet(const Planet &planet);
         virtual ~Planet();
 
+        sf::Vector2f AccelerationAppliedAt(const sf::Vector2f &p) const;
         void ApplyGravityTo(Entity &entity) const;
         
         virtual sf::Packet &WriteToPacket(sf::Packet &packet) const;

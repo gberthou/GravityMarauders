@@ -40,6 +40,7 @@ class SpaceShip: public Entity
         sf::Transform localMatrix;
 
         friend class ViewSpaceShip;
+        friend class ViewTrackSpaceShip;
         friend class ViewFormation;
         friend class ControllerSpaceShipUserKeyboard;
         friend class ControllerFormation;

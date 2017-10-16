@@ -13,6 +13,14 @@ void Map::AddPlanet(Planet &planet)
     planets.push_back(planet);
 }
 
+sf::Vector2f Map::AccelerationAppliedAt(const sf::Vector2f &position) const
+{
+    sf::Vector2f ret(0.f, 0.f);
+    for(Planet planet : planets)
+        ret += planet.AccelerationAppliedAt(position);
+    return ret;
+}
+
 void Map::ApplyGravityTo(Entity &entity) const
 {
     for(Planet planet : planets)

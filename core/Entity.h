@@ -40,6 +40,7 @@ class Entity
 
         sf::Vector2f GetVectorTo(const sf::Vector2f &target) const;
         sf::Vector2f GetNextVelocity() const;
+        sf::Vector2f GetPosition() const;
         sf::Vector2f GetNextPosition() const;
         
         virtual sf::Packet &WriteToPacket(sf::Packet &packet) const;

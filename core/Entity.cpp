@@ -106,6 +106,11 @@ sf::Vector2f Entity::GetNextVelocity() const
     return velocity + builtAcceleration * FRAME_DT;
 }
 
+sf::Vector2f Entity::GetPosition() const
+{
+    return position;
+}
+
 sf::Vector2f Entity::GetNextPosition() const
 {
     return position + GetNextVelocity() * FRAME_DT;

@@ -29,20 +29,25 @@ Planet::~Planet()
 {
 }
 
-void Planet::ApplyGravityTo(Entity &entity) const
+sf::Vector2f Planet::AccelerationAppliedAt(const sf::Vector2f &p) const
 {
-    sf::Vector2f direction = entity.GetVectorTo(position);
+    sf::Vector2f direction = position - p;
     float directionLen2 = len2(direction);
 
     if(directionLen2 > EPSILON * EPSILON)
     {
         // deltaAcceleration(entity) = Force / entity.mass
         // divide by sqrt(directionLen2) to normalize direction
-        sf::Vector2f deltaAcceleration = direction * (GRAVITY_FACTOR * mass /
-                (static_cast<float>(sqrt(directionLen2))*directionLen2)); 
+        return direction * (GRAVITY_FACTOR * mass /
+               (static_cast<float>(sqrt(directionLen2))*directionLen2)); 
         
-        entity.AddAcceleration(deltaAcceleration);
     }
+    return sf::Vector2f(0.f, 0.f);
+}
+
+void Planet::ApplyGravityTo(Entity &entity) const
+{
+    entity.AddAcceleration(AccelerationAppliedAt(entity.GetPosition()));
 }
 
 sf::Packet &Planet::WriteToPacket(sf::Packet &packet) const
