@@ -9,6 +9,8 @@ Snapshot::Snapshot()
 
 Snapshot::~Snapshot()
 {
+    for(auto it: entities)
+        delete it.second;
 }
 
 void Snapshot::AddEntity(const Entity &entity)

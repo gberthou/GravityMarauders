@@ -8,6 +8,8 @@ EntityManager::EntityManager():
 
 EntityManager::~EntityManager()
 {
+    for(auto it: entities)
+        delete it.second;
 }
 
 Planet *EntityManager::AddPlanet(float density, float radius)
