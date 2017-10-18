@@ -1,17 +1,19 @@
 #include <ViewTrackSpaceShip.h>
 #include <Entity.h>
 
-const size_t LINE_POINTS = 256;
-const float  FRAME_STEP  = 16.f;
-
-ViewTrackSpaceShip::ViewTrackSpaceShip(const SpaceShip &sp, const Map &m):
+ViewTrackSpaceShip::ViewTrackSpaceShip(size_t pointCount, float step,
+                                       const SpaceShip &sp, const Map &m):
+    linePoints(pointCount),
+    frameStep(step),
     spaceship(sp),
     map(m)
 {
+    vertices = new sf::Vertex[linePoints];
 }
 
 ViewTrackSpaceShip::~ViewTrackSpaceShip()
 {
+    delete [] vertices;
 }
 
 void ViewTrackSpaceShip::draw(sf::RenderTarget &target, sf::RenderStates states)
@@ -19,21 +21,19 @@ void ViewTrackSpaceShip::draw(sf::RenderTarget &target, sf::RenderStates states)
 {
     (void) states;
 
-    sf::Vertex vertices[LINE_POINTS];
-
     sf::Vector2f tmpPosition = spaceship.position;
     sf::Vector2f tmpVelocity = spaceship.velocity;
 
-    for(size_t i = 0; i < LINE_POINTS; ++i)
+    for(size_t i = 0; i < linePoints; ++i)
     {
         sf::Vector2f acceleration = map.AccelerationAppliedAt(tmpPosition);
 
         vertices[i] = tmpPosition;
         
-        tmpPosition += tmpVelocity * (FRAME_STEP * Entity::FRAME_DT);
-        tmpVelocity += acceleration * (FRAME_STEP * Entity::FRAME_DT);
+        tmpPosition += tmpVelocity * (frameStep * Entity::FRAME_DT);
+        tmpVelocity += acceleration * (frameStep * Entity::FRAME_DT);
     }
 
-    target.draw(vertices, LINE_POINTS, sf::LineStrip);
+    target.draw(vertices, linePoints, sf::LineStrip);
 }
 

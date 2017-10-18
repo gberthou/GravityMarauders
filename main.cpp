@@ -18,6 +18,7 @@
 #include <ViewMap.h>
 #include <ViewEntityManager.h>
 #include <ViewTracks.h>
+#include <ViewMinimap.h>
 
 int main(void)
 {
@@ -76,6 +77,10 @@ int main(void)
             window.draw(ViewEntityManager(entityManager));
             window.draw(ViewFormation(formation)); // Debug only
             window.draw(ViewTracks(entityManager, map));
+
+            ViewMinimap vMinimap(200, 200, map, formation);
+            vMinimap.ApplyView(window);
+            window.draw(vMinimap);
             window.display();
 
             client.Receive();

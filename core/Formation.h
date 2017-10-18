@@ -58,6 +58,7 @@ class Formation
         SpaceShip *leader;
 
         friend class ViewFormation;
+        friend class ViewMinimap;
         friend class ControllerFormation;
 };
 

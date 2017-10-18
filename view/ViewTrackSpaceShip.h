@@ -10,15 +10,19 @@
 class ViewTrackSpaceShip: public sf::Drawable
 {
     public:
-        explicit ViewTrackSpaceShip(const SpaceShip &sp, const Map &m);
+        ViewTrackSpaceShip(size_t pointCount, float step, const SpaceShip &sp,
+                           const Map &m);
         virtual ~ViewTrackSpaceShip();
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states)
             const;
 
     protected:
+        size_t linePoints;
+        float frameStep;
         const SpaceShip &spaceship;
         const Map       &map;
+        sf::Vertex *vertices;
 };
 
 #endif
