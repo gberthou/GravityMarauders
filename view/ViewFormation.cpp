@@ -13,9 +13,6 @@ ViewFormation::~ViewFormation()
 void ViewFormation::draw(sf::RenderTarget &target, sf::RenderStates states)
     const
 {
-    (void) target;
-    (void) states;
-
     for(auto it : formation.slots)
     {
         ViewSpaceShip vSpaceship(it.spaceship);

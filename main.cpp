@@ -44,7 +44,8 @@ int main(void)
         client.Connect();
         if(!client.WaitForConnectionAck(sf::seconds(3))
         || !client.WaitForMap(sf::seconds(3))
-        || !client.WaitForInfoTransferred(sf::seconds(3)))
+        || !client.WaitForInfoTransferred(sf::seconds(3))
+        || !client.WaitForGameReady(sf::seconds(3)))
             throw GameException("No response from server");
 
         sf::RenderWindow window(sf::VideoMode(800, 600), "GravityMarauders");

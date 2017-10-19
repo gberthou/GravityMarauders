@@ -5,6 +5,33 @@
 const size_t LINE_POINTS = 2048;
 const float FRAME_STEP = 512.f;
 
+static sf::FloatRect squarify(const sf::FloatRect &rect)
+{
+    const float MARGIN = 1000.f;
+
+    sf::FloatRect r = rect;
+    r.left   -= MARGIN;
+    r.top    -= MARGIN;
+    r.width  += 2 * MARGIN;
+    r.height += 2 * MARGIN;
+
+    if(r.width == r.height)
+        return r;
+    if(r.width > r.height)
+    {
+        float delta = r.width - r.height;
+        r.height = r.width;
+        r.top -= delta / 2.f;
+    }
+    else // r.width < r.height
+    {
+        float delta = r.height - r.width;
+        r.width = r.height;
+        r.left -= delta / 2.f;
+    }
+    return r;
+}
+
 ViewMinimap::ViewMinimap(unsigned int w, unsigned int h,
                          const Map &m, const Formation &f):
     width(w),
@@ -23,8 +50,7 @@ void ViewMinimap::ApplyView(sf::RenderWindow &window) const
     sf::Vector2u windowSize = window.getSize();
 
     // World coordinates
-    // TODO: Auto compute these values
-    sf::View view(sf::FloatRect(-3600, -6600, 12800, 12800));
+    sf::View view(squarify(map.bounds));
 
     // Top left corner (coordinates in range 0..1)
     view.setViewport(sf::FloatRect(0, 0, width / (float) windowSize.x,
@@ -34,20 +60,18 @@ void ViewMinimap::ApplyView(sf::RenderWindow &window) const
 
 void ViewMinimap::draw(sf::RenderTarget &target, sf::RenderStates states) const
 {
-    sf::RectangleShape canvas(sf::Vector2f(12800, 12800));
+    sf::FloatRect bounds = squarify(map.bounds);
+    sf::RectangleShape canvas(sf::Vector2f(bounds.width, bounds.height));
     canvas.setFillColor(sf::Color(0, 0, 255, 128));
-    canvas.setPosition(sf::Vector2f(-3600, -6600));
+    canvas.setPosition(sf::Vector2f(bounds.left, bounds.top));
+
     // Draw minimap background
     target.draw(canvas, states);
 
     // Draw planets
     target.draw(ViewMap(map), states);
 
-    // Draw predicted track of the player's spaceship
-    // TODO: Draw only leader's track
-    for(auto it : formation.slots)
-    {
-        ViewTrackSpaceShip(LINE_POINTS, FRAME_STEP, it.spaceship, map).draw(target, states);
-    }
+    // Draw predicted track of the leader's spaceship
+    ViewTrackSpaceShip(LINE_POINTS, FRAME_STEP, *formation.leader, map).draw(target, states);
 }
 

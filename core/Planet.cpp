@@ -50,6 +50,11 @@ void Planet::ApplyGravityTo(Entity &entity) const
     entity.AddAcceleration(AccelerationAppliedAt(entity.GetPosition()));
 }
 
+float Planet::GetRadius() const
+{
+    return radius;
+}
+
 sf::Packet &Planet::WriteToPacket(sf::Packet &packet) const
 {
     packet << radius;

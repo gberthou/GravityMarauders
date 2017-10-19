@@ -93,6 +93,22 @@ bool Client::WaitForInfoTransferred(const sf::Time &timeout)
     return false;
 }
 
+bool Client::WaitForGameReady(const sf::Time &timeout)
+{
+    if(state == LS_INITIALIZED)
+    {
+        sf::SocketSelector selector;
+        selector.add(*this);
+        if(selector.wait(timeout))
+        {
+            Receive();
+            if(state == LS_READY) // Game initialized
+                return true;
+        }
+    }
+    return false;
+}
+
 bool Client::Receive()
 {
     sf::Socket::Status status;
@@ -166,6 +182,8 @@ void Client::onPacketReceived(sf::Packet &packet,
     }
     else if(ptype == PT_SPAWN_ACK && state == LS_INITIALIZED)
     {
+        state = LS_READY;
+
         Snapshot *snapshot = new Snapshot;
         packet >> *snapshot;
 

@@ -12,7 +12,8 @@ enum LocalState
     LS_CREATED,
     LS_CONNECTED_NO_MAP,
     LS_MAPOK_SEND_INFOS,
-    LS_INITIALIZED
+    LS_INITIALIZED,
+    LS_READY
 };
 
 class Client : protected sf::UdpSocket
@@ -27,6 +28,7 @@ class Client : protected sf::UdpSocket
         bool WaitForConnectionAck(const sf::Time &timeout);
         bool WaitForMap(const sf::Time &timeout);
         bool WaitForInfoTransferred(const sf::Time &timeout);
+        bool WaitForGameReady(const sf::Time &timeout);
         
         bool Receive();
 

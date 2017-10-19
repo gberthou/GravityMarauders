@@ -15,6 +15,8 @@ class Planet: public Entity
 
         sf::Vector2f AccelerationAppliedAt(const sf::Vector2f &p) const;
         void ApplyGravityTo(Entity &entity) const;
+
+        float GetRadius() const;
         
         virtual sf::Packet &WriteToPacket(sf::Packet &packet) const;
         virtual sf::Packet &ReadFromPacket(sf::Packet &packet);

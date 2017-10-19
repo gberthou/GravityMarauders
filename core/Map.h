@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
 
 #include <Planet.h>
@@ -22,8 +23,12 @@ class Map
 
     protected:
         std::vector<Planet> planets;
+        sf::FloatRect bounds;
+
+        void expandBounds(const Planet &planet, bool firstPlanet);
 
         friend class ViewMap;
+        friend class ViewMinimap;
 };
 
 #endif
