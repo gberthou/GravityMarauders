@@ -91,27 +91,24 @@ void SpaceShip::GoToPoint(const sf::Vector2f &destination,
     sf::Vector2f idealForce         =
         mass * (targetAcceleration - builtAcceleration - acceleration);
 
-    float idealForceLen2 = len2(idealForce);
+    generateForce(idealForce);
+}
 
-    if(idealForceLen2 > EPSILON * EPSILON) // Thrust required
-    {
-        float thrustIntensity = sqrt(idealForceLen2);
+void SpaceShip::FollowOrbit(const Planet &planet)
+{
+    sf::Vector2f idealVelocity = planet.OrbitVelocityAt(position);
+    
+    // Orbit must rotate in the same direction than current velocity
+    if(dot(velocity, idealVelocity) < 0.f)
+        idealVelocity = idealVelocity * -1.f;
 
-        // Normalize direction
-        sf::Vector2f thrustDirection = idealForce / thrustIntensity;
+    sf::Vector2f targetAcceleration =
+        (idealVelocity - velocity) / Entity::FRAME_DT;
 
-        // Rotate spaceship
-        sf::Vector2f realDirection =
-            ChangeDirection(thrustDirection);
+    sf::Vector2f idealForce         =
+        mass * (targetAcceleration - builtAcceleration - acceleration);
 
-        // Thrust engines only when the spaceship is almost aligned with ideal
-        // thrust direction
-        float product = dot(realDirection, thrustDirection);
-        if(product > .9f)
-        {
-            Thrust(thrustIntensity);
-        }
-    }
+    generateForce(idealForce);
 }
 
 void SpaceShip::Thrust(float thrustIntensity)
@@ -151,3 +148,27 @@ Entity *SpaceShip::Copy() const
     return ret;
 }
 
+void SpaceShip::generateForce(const sf::Vector2f &idealForce)
+{
+    float idealForceLen2 = len2(idealForce);
+
+    if(idealForceLen2 > EPSILON * EPSILON) // Thrust required
+    {
+        float thrustIntensity = sqrt(idealForceLen2);
+
+        // Normalize direction
+        sf::Vector2f thrustDirection = idealForce / thrustIntensity;
+
+        // Rotate spaceship
+        sf::Vector2f realDirection =
+            ChangeDirection(thrustDirection);
+
+        // Thrust engines only when the spaceship is almost aligned with ideal
+        // thrust direction
+        float product = dot(realDirection, thrustDirection);
+        if(product > .9f)
+        {
+            Thrust(thrustIntensity);
+        }
+    }
+}

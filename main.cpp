@@ -7,6 +7,7 @@
 #include <ControllerSpaceShipUserKeyboard.h>
 #include <ControllerFormation.h>
 #include <ControllerEntityManager.h>
+#include <ControllerFormationOrbit.h>
 #include <Snapshot.h>
 #include <SnapshotHistory.h>
 #include <EntityManager.h>
@@ -50,6 +51,8 @@ int main(void)
 
         sf::RenderWindow window(sf::VideoMode(800, 600), "GravityMarauders");
 
+        ControllerFormationOrbit orbitController(formation, map);
+
         window.setFramerateLimit(120);
         while(window.isOpen())
         {
@@ -60,6 +63,7 @@ int main(void)
                     window.close();
                
                 ControllerFormation(formation).Update(event);
+                orbitController.Update(event);
             }
 
             // Compute forces, must be called at the beginning
@@ -71,6 +75,7 @@ int main(void)
 
             // Entity controllers must be updated at the end
             ControllerEntityManager(entityManager).Update();
+            orbitController.Update();
 
             window.clear();
             ViewFormation(formation).CenterView(window);

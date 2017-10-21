@@ -60,6 +60,7 @@ class Formation
         friend class ViewFormation;
         friend class ViewMinimap;
         friend class ControllerFormation;
+        friend class ControllerFormationOrbit;
 };
 
 #endif

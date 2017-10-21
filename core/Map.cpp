@@ -1,5 +1,6 @@
 #include <Map.h>
 #include <Utils.hpp>
+#include <GameException.h>
 
 Map::Map()
 {
@@ -27,6 +28,27 @@ void Map::ApplyGravityTo(Entity &entity) const
 {
     for(Planet planet : planets)
         planet.ApplyGravityTo(entity);
+}
+
+const Planet &Map::ClosestPlanetTo(const sf::Vector2f &position) const
+{
+    if(planets.size() == 0)
+        throw GameException("Cannot get closest planet in an empty map");
+
+    const Planet *ret = &planets[0];
+    float dist2 = len2(ret->GetPosition() - position);
+
+    for(size_t i = 1; i < planets.size(); ++i)
+    {
+        float tmp = len2(planets[i].GetPosition() - position);
+        if(tmp < dist2)
+        {
+            ret = &planets[i];
+            dist2 = tmp;
+        }
+    }
+
+    return *ret;
 }
 
 sf::Packet &operator<<(sf::Packet &packet, const Map &map)

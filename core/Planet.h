@@ -14,6 +14,7 @@ class Planet: public Entity
         virtual ~Planet();
 
         sf::Vector2f AccelerationAppliedAt(const sf::Vector2f &p) const;
+        sf::Vector2f OrbitVelocityAt(const sf::Vector2f p) const;
         void ApplyGravityTo(Entity &entity) const;
 
         float GetRadius() const;

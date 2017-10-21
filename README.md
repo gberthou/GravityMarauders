@@ -10,6 +10,7 @@ Keyboard:
 
  - Left/right arrows: change orientation
  - Spacebar: thrust
+ - O: automated orbit around the nearest planet
 
 ## Quickstart
 

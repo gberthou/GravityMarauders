@@ -45,6 +45,15 @@ sf::Vector2f Planet::AccelerationAppliedAt(const sf::Vector2f &p) const
     return sf::Vector2f(0.f, 0.f);
 }
 
+sf::Vector2f Planet::OrbitVelocityAt(const sf::Vector2f p) const
+{
+    sf::Vector2f direction = position - p;
+    sf::Vector2f velocitySupport = normalize(orthogonalTo(direction));
+    float distance = len(direction);
+    
+    return velocitySupport * static_cast<float>(sqrt(GRAVITY_FACTOR * mass / distance));
+}
+
 void Planet::ApplyGravityTo(Entity &entity) const
 {
     entity.AddAcceleration(AccelerationAppliedAt(entity.GetPosition()));
