@@ -18,7 +18,7 @@
 #include <ViewSpaceShip.h>
 #include <ViewMap.h>
 #include <ViewEntityManager.h>
-#include <ViewTracks.h>
+#include <ViewFormationTrack.h>
 #include <ViewMinimap.h>
 
 int main(void)
@@ -54,6 +54,7 @@ int main(void)
         ControllerFormationOrbit orbitController(formation, map);
 
         window.setFramerateLimit(120);
+        window.setVerticalSyncEnabled(true);
         while(window.isOpen())
         {
             sf::Event event;
@@ -82,7 +83,7 @@ int main(void)
             window.draw(ViewMap(map));
             window.draw(ViewEntityManager(entityManager));
             window.draw(ViewFormation(formation)); // Debug only
-            window.draw(ViewTracks(entityManager, map));
+            window.draw(ViewFormationTrack(formation, map));
 
             ViewMinimap vMinimap(200, 200, map, formation);
             vMinimap.ApplyView(window);
