@@ -9,7 +9,7 @@
 class ViewFormationTrack: public sf::Drawable
 {
     public:
-        explicit ViewFormationTrack(const Formation &f, const Map &map);
+        ViewFormationTrack(const Formation &f, const Map &m);
         virtual ~ViewFormationTrack();
 
         virtual void draw(sf::RenderTarget &target, sf::RenderStates states)

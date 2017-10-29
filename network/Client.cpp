@@ -147,7 +147,6 @@ void Client::onPacketReceived(sf::Packet &packet,
                               unsigned short port)
 {
     (void) port;
-    (void) ipAddress;
 
     PacketType ptype = PacketFactory::GetPacketType(packet);
     if(ptype == PT_CONNECTION_ACK && state == LS_CREATED)
