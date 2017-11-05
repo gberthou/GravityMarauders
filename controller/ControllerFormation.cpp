@@ -23,7 +23,7 @@ void ControllerFormation::Update()
     if(!formation.IsValid())
         throw GameException("Invalid formation");
 
-    for(auto it : formation.slots)
+    for(auto &it : formation.slots)
     {
         if(!it.IsLeader())
         {

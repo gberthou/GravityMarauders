@@ -9,7 +9,7 @@ Snapshot::Snapshot()
 
 Snapshot::~Snapshot()
 {
-    for(auto it: entities)
+    for(auto &it: entities)
         delete it.second;
 }
 
@@ -30,7 +30,7 @@ sf::Packet &operator<<(sf::Packet &packet, const Snapshot &snapshot)
 {
     packet << static_cast<sf::Uint32>(snapshot.entities.size());
     
-    for(auto it : snapshot.entities)
+    for(const auto &it : snapshot.entities)
     {
         packet << (sf::Uint8)(it.second->GetType());
         it.second->WriteToPacket(packet);

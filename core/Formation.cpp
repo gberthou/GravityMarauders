@@ -85,7 +85,7 @@ void Formation::evaluateLeader(void)
 {
     SpaceShip *ptr;
     unsigned int leaderCount = 0;
-    for(auto it : slots)
+    for(const auto &it : slots)
     {
         if(it.IsLeader())
         {

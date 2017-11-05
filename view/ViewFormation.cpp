@@ -13,14 +13,8 @@ ViewFormation::~ViewFormation()
 void ViewFormation::draw(sf::RenderTarget &target, sf::RenderStates states)
     const
 {
-    for(auto it : formation.slots)
-    {
-        ViewSpaceShip vSpaceship(it.spaceship);
-        target.draw(vSpaceship, states);
-    }
-
     // Debug purpose only
-    for(auto it : formation.slots)
+    for(const auto &it : formation.slots)
     {
         sf::Vector2f p = formation.leader->localMatrix.transformPoint(
             {formation.gridUnit.x * it.desc.gridX,

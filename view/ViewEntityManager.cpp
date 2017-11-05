@@ -14,7 +14,7 @@ ViewEntityManager::~ViewEntityManager()
 void ViewEntityManager::draw(sf::RenderTarget &target, sf::RenderStates states)
     const
 {
-    for(auto it : entityManager.entities)
+    for(const auto &it : entityManager.entities)
     {
         switch(it.second->GetType())
         {

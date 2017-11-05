@@ -21,7 +21,7 @@ class EntityManager
         SpaceShip *AddSpaceShip(float mass);
 
         void FindEntities(std::vector<Entity*> &entityCollection,
-                          const std::vector<EntityID> &ids);
+                          const std::vector<EntityID> &ids) const;
 
         void AddToSnapshot(Snapshot &snapshot) const;
         void RewriteEntities(const Snapshot &snapshot);

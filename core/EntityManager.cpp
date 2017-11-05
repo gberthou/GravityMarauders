@@ -8,7 +8,7 @@ EntityManager::EntityManager():
 
 EntityManager::~EntityManager()
 {
-    for(auto it: entities)
+    for(auto &it: entities)
         delete it.second;
 }
 
@@ -38,13 +38,13 @@ SpaceShip *EntityManager::AddSpaceShip(float mass)
 }
 
 void EntityManager::FindEntities(std::vector<Entity*> &entityCollection,
-                                 const std::vector<EntityID> &ids)
+                                 const std::vector<EntityID> &ids) const
 {
     entityCollection.clear();
     for(EntityID id : ids)
     {
-        auto it = entities.find(id);
-        if(it == entities.end())
+        const auto &it = entities.find(id);
+        if(it == entities.cend())
             throw GameException("Trying to access a non-existing entity");
         entityCollection.push_back(it->second);
     }
@@ -52,20 +52,20 @@ void EntityManager::FindEntities(std::vector<Entity*> &entityCollection,
 
 void EntityManager::AddToSnapshot(Snapshot &snapshot) const
 {
-    for(auto it : entities)
+    for(const auto &it : entities)
         snapshot.AddEntity(*it.second);
 }
 
 void EntityManager::RewriteEntities(const Snapshot &snapshot)
 {
     entities.clear();
-    for(auto it : snapshot.GetEntities())
+    for(const auto &it : snapshot.GetEntities())
         entities.insert(std::pair<EntityID, Entity*>(it.first, it.second));
 }
 
 void EntityManager::ApplyGravity(const Map &map)
 {
-    for(auto it : entities)
+    for(const auto &it : entities)
         map.ApplyGravityTo(*it.second);
 }
 

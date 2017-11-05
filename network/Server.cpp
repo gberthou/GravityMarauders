@@ -87,8 +87,8 @@ void Server::onPacketReceived(sf::Packet &packet,
     }
     else if(ptype == PT_MAP_REQ)
     {
-        auto it = clients.find({ipAddress, port});
-        if(it != clients.end())
+        const auto &it = clients.find({ipAddress, port});
+        if(it != clients.cend())
         {
             sf::Packet response;
             PacketFactory::BuildMapAnsPacket(response, map);
@@ -97,8 +97,8 @@ void Server::onPacketReceived(sf::Packet &packet,
     }
     else if(ptype == PT_FORMATION_PUSH)
     {
-        auto it = clients.find({ipAddress, port});
-        if(it != clients.end() && it->second.state != CS_SPAWNED)
+        const auto &it = clients.find({ipAddress, port});
+        if(it != clients.cend() && it->second.state != CS_SPAWNED)
         {
             // Update matching formation
             packet >> it->second.formation;
@@ -111,8 +111,8 @@ void Server::onPacketReceived(sf::Packet &packet,
     }
     else if(ptype == PT_SPAWN_PUSH)
     {
-        auto it = clients.find({ipAddress, port});
-        if(it != clients.end() && it->second.state != CS_SPAWNED)
+        const auto &it = clients.find({ipAddress, port});
+        if(it != clients.cend() && it->second.state != CS_SPAWNED)
         {
             std::vector<Entity*> spawnedEntities;
             SpawnFormation(it->second.formation, spawnedEntities);
