@@ -24,11 +24,11 @@ void ViewSpaceShip::CenterWindowView(sf::RenderWindow &window) const
 
 void ViewSpaceShip::Update()
 {
-    const sf::Vector2f THRUST_POSITION_A = sf::Vector2f(-5, 13);
-    const sf::Vector2f THRUST_POSITION_B = sf::Vector2f(5, 13);
+    const sf::Vector2f THRUST_POSITION_A = sf::Vector2f(-3, 13);
+    const sf::Vector2f THRUST_POSITION_B = sf::Vector2f(3, 13);
 
-    const float VELOCITY_ANGLE_A         = 80;
-    const float VELOCITY_ANGLE_B         = 100;
+    const float VELOCITY_ANGLE_A         = 85;
+    const float VELOCITY_ANGLE_B         = 90;
 
     const float VELOCITY_INTENSITY_A     = 200;
     const float VELOCITY_INTENSITY_B     = 400;
@@ -52,7 +52,10 @@ void ViewSpaceShip::Update()
 
     for(auto it = particleSystems.begin(); it != particleSystems.end();)
     {
-        it->SetVelocityOffset(spaceship.velocity);
+        sf::Transform matrix;
+        matrix.rotate(-spaceship.angle);
+
+        it->SetVelocityOffset(matrix.transformPoint(spaceship.velocity));
         it->Update();
         if(it->IsDone())
             it = particleSystems.erase_after(it);

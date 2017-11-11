@@ -31,7 +31,7 @@ struct Particle
             if(IsDead())
                 return;
 
-            const float PARTICLE_SIZE = 4;
+            const float PARTICLE_SIZE = 2;
             position += velocity * Entity::FRAME_DT;
 
             vertices[offset + 0].position = sf::Vector2f(position.x - PARTICLE_SIZE / 2,
