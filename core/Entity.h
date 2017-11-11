@@ -50,6 +50,8 @@ class Entity
 
         static Entity *CreateEntity(EntityType entityType);
 
+        static const float FRAME_DT;
+
     protected:
         EntityID id;
         EntityType entityType; 
@@ -60,8 +62,6 @@ class Entity
         sf::Vector2f velocity;
         sf::Vector2f formerVelocity;
         sf::Vector2f position;
-
-        static const float FRAME_DT;
 };
 
 #endif

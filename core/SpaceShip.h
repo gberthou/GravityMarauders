@@ -30,6 +30,7 @@ class SpaceShip: public Entity
                        const sf::Vector2f &targetVelocity);
 
         void Thrust(float thrustIntensity = MAX_THRUST * 2./3.);
+        void StopThrust();
         void FollowOrbit(const Planet &planet);
         
         virtual sf::Packet &WriteToPacket(sf::Packet &packet) const;
@@ -40,6 +41,7 @@ class SpaceShip: public Entity
     protected:
         float angle; // Degrees
         sf::Transform localMatrix;
+        bool thrustEnabled;
 
         void generateForce(const sf::Vector2f &idealForce);
 

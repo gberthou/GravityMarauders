@@ -11,6 +11,7 @@ ControllerSpaceShipUserKeyboard::~ControllerSpaceShipUserKeyboard()
 
 void ControllerSpaceShipUserKeyboard::Update(const sf::Event &event)
 {
+    spaceship.StopThrust();
     if(event.type == sf::Event::KeyPressed)
     {
         if(event.key.code == sf::Keyboard::Right)

@@ -12,20 +12,23 @@ const float MAX_ANGULAR_VELOCITY = 5.f; // Degrees per frame
 const float MAX_THRUST           = 12e3f;
 
 SpaceShip::SpaceShip():
-    angle(0.f)
+    angle(0.f),
+    thrustEnabled(false)
 {
 }
 
 SpaceShip::SpaceShip(const EntityID &i, float mass):
     Entity(i, ET_SPACESHIP, mass, true),
-    angle(0.f)
+    angle(0.f),
+    thrustEnabled(false)
 {
 }
 
 SpaceShip::SpaceShip(const SpaceShip &spaceship):
     Entity(spaceship),
     angle(spaceship.angle),
-    localMatrix(spaceship.localMatrix)
+    localMatrix(spaceship.localMatrix),
+    thrustEnabled(false)
 {
 }
 
@@ -126,6 +129,13 @@ void SpaceShip::Thrust(float thrustIntensity)
     
     // Transform force into acceleration
     AddAcceleration(direction * (thrustIntensity / mass));
+
+    thrustEnabled = (abs(thrustIntensity) > 1e-3);
+}
+
+void SpaceShip::StopThrust()
+{
+    thrustEnabled = false;
 }
 
 sf::Packet &SpaceShip::WriteToPacket(sf::Packet &packet) const
@@ -171,4 +181,6 @@ void SpaceShip::generateForce(const sf::Vector2f &idealForce)
             Thrust(thrustIntensity);
         }
     }
+    else
+        thrustEnabled = false;
 }

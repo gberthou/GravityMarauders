@@ -52,6 +52,7 @@ int main(void)
         sf::RenderWindow window(sf::VideoMode(800, 600), "GravityMarauders");
 
         ControllerFormationOrbit orbitController(formation, map);
+        ViewEntityManager viewEntityManager(entityManager);
 
         window.setFramerateLimit(120);
         window.setVerticalSyncEnabled(true);
@@ -78,11 +79,14 @@ int main(void)
             ControllerEntityManager(entityManager).Update();
             orbitController.Update();
 
+            // Update views
+            viewEntityManager.Update();
+
             window.clear();
             ViewFormation(formation).CenterView(window);
             window.draw(ViewMap(map));
-            window.draw(ViewEntityManager(entityManager));
-            window.draw(ViewFormation(formation)); // Debug only
+            window.draw(viewEntityManager);
+            //window.draw(ViewFormation(formation)); // Debug only
             window.draw(ViewFormationTrack(formation, map));
 
             ViewMinimap vMinimap(200, 200, map, formation);
